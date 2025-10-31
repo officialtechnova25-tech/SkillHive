@@ -1,6 +1,8 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="config.js"></script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sign Up - Skill Hive</title>
@@ -75,12 +77,12 @@
       text-decoration: line-through;
     }
     #password-requirements li.valid::before {
-      content: '✓ '; /* Checkmark */
+      content: 'âœ“ '; /* Checkmark */
       font-weight: bold;
       margin-right: 5px;
     }
     #password-requirements li.invalid::before {
-      content: '✗ '; /* 'x' mark */
+      content: 'âœ— '; /* 'x' mark */
       font-weight: bold;
       margin-right: 5px;
     }
@@ -92,6 +94,8 @@
   <div id="tsparticles"></div>
 
   <header class="sticky-top">
+    <script src="config.js"></script>
+
     <div class="container d-flex justify-content-between align-items-center py-2">
       <div style="flex: 1 1 0;">
         <a class="navbar-brand d-flex align-items-center" href="index.html">
@@ -178,7 +182,7 @@
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       lucide.createIcons();
-      // ✅ Toast Notification Function
+      // âœ… Toast Notification Function
     function showToast(message, type = "success") {
       const toastEl = document.getElementById("mainToast");
       const toastMsg = document.getElementById("toastMessage");
@@ -298,7 +302,7 @@
         // --- END UPDATED VALIDATION ---
 
         try {
-          const response = await fetch('/api/auth/signup', {
+          const response = await fetch(${API_BASE_URL}auth/signup', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, email, password }),

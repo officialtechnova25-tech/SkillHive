@@ -1,6 +1,8 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="config.js"></script>
+
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Skill Hive - Find Skills</title>
@@ -149,6 +151,8 @@
   <div id="tsparticles"></div>
 
   <header class="sticky-top glass-header">
+    <script src="config.js"></script>
+
     <div class="container d-flex justify-content-between align-items-center py-2">
       <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#mainOffcanvas"><i data-lucide="menu"></i></button>
       <a class="navbar-brand d-inline-flex align-items-center mx-auto" href="index.html"> <img src="assets/images/skillhive-logo.png" alt="Skill Hive Logo" width="110" height="70" /> <span class="ms-2 fs-4">Skill Hive</span>
@@ -208,7 +212,7 @@
 
   <footer class="py-4 glass-footer mt-auto">
     <div class="container text-center">
-      <p class="mb-0 text-muted">&copy; 2025 Skill Hive — Powered by Tech Nova</p>
+      <p class="mb-0 text-muted">&copy; 2025 Skill Hive â€” Powered by Tech Nova</p>
     </div>
   </footer>
 
@@ -527,7 +531,7 @@
 
         try {
             // This is the new API route we created in sessionRoutes.js
-            const response = await fetch('/api/sessions/start-now', { 
+            const response = await fetch(${API_BASE_URL}sessions/start-now', { 
                 method: 'POST',
                 headers: getAuthHeaders(true),
                 body: JSON.stringify({ tutorId: tutorId })
@@ -575,7 +579,7 @@
         button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sending...';
 
         try {
-            const response = await fetch('/api/sessions/request', {
+            const response = await fetch(${API_BASE_URL}sessions/request', {
                 method: 'POST',
                 headers: getAuthHeaders(true),
                 body: JSON.stringify({ tutorId: tutorId })

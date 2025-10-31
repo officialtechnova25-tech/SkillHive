@@ -1,6 +1,8 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="config.js"></script>
+
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>User Profile - Skill Hive</title>
@@ -95,6 +97,8 @@
   <div id="tsparticles"></div>
 
   <header class="sticky-top glass-effect glass-header py-2">
+    <script src="config.js"></script>
+
     <div class="container d-flex align-items-center">
       <button class="btn btn-primary me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#mainOffcanvas"> <i data-lucide="menu"></i> </button>
       <a class="navbar-brand mx-auto d-flex align-items-center" href="index.html" style="gap:.5rem"> <img src="assets/images/skillhive-logo.png" alt="Skill Hive" height="48" /> <span style="font-family:'Orbitron',sans-serif;font-weight:700;">Skill Hive</span> </a>
@@ -113,17 +117,17 @@
       
       <div class="profile-left-col">
         <img id="profilePic" class="avatar" src="/uploads/profile-pics/default.png" alt="Profile" />
-        <h3 id="profile-name" class="mt-2 mb-0">—</h3>
-        <p id="profile-email" class="text-muted mb-2">—</p>
-        <p><span id="profile-userType" class="badge rounded-pill px-3 py-1">—</span></p>
+        <h3 id="profile-name" class="mt-2 mb-0">â€”</h3>
+        <p id="profile-email" class="text-muted mb-2">â€”</p>
+        <p><span id="profile-userType" class="badge rounded-pill px-3 py-1">â€”</span></p>
       </div>
 
       <div class="profile-right-col">
           <div class="card card-body glass-effect p-3">
               <h5 class="mb-3">Personal Details</h5>
-              <p class="mb-2 d-flex justify-content-between"><strong>Gender:</strong> <span id="profile-gender">—</span></p>
-              <p class="mb-2 d-flex justify-content-between"><strong>Location:</strong> <span id="profile-location">—</span></p>
-              <p class="mb-0 d-flex justify-content-between"><strong>Member Since:</strong> <span id="profile-joined">—</span></p>
+              <p class="mb-2 d-flex justify-content-between"><strong>Gender:</strong> <span id="profile-gender">â€”</span></p>
+              <p class="mb-2 d-flex justify-content-between"><strong>Location:</strong> <span id="profile-location">â€”</span></p>
+              <p class="mb-0 d-flex justify-content-between"><strong>Member Since:</strong> <span id="profile-joined">â€”</span></p>
           </div>
           
           <div class="card card-body glass-effect p-3">
@@ -150,7 +154,7 @@
     </div> 
   </main>
 
-  <footer class="glass-effect glass-footer text-center py-3 mt-auto"> <p class="mb-0 text-muted">&copy; 2025 Skill Hive — Learn, Teach, Grow.</p> </footer>
+  <footer class="glass-effect glass-footer text-center py-3 mt-auto"> <p class="mb-0 text-muted">&copy; 2025 Skill Hive â€” Learn, Teach, Grow.</p> </footer>
 
   <div class="offcanvas offcanvas-start" tabindex="-1" id="mainOffcanvas" aria-labelledby="mainOffcanvasLabel">
     <div class="offcanvas-header"> <h5 class="offcanvas-title" id="mainOffcanvasLabel">Skill Hive Menu</h5> <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button> </div>
@@ -264,8 +268,8 @@
                          ? user.profilePic 
                          : "/uploads/profile-pics/default.png";
       
-      profileNameEl.textContent = user.name || "—";
-      profileEmailEl.textContent = user.email || "—";
+      profileNameEl.textContent = user.name || "â€”";
+      profileEmailEl.textContent = user.email || "â€”";
       
       const userType = user.userType || "study";
       profileUserTypeEl.textContent = userType.charAt(0).toUpperCase() + userType.slice(1);
@@ -273,7 +277,7 @@
       
       profileGenderEl.textContent = user.gender ? (user.gender.charAt(0).toUpperCase() + user.gender.slice(1)) : "Not specified";
       profileLocationEl.textContent = user.location || "Not specified";
-      profileJoinedEl.textContent = user.createdAt ? new Date(user.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : "—";
+      profileJoinedEl.textContent = user.createdAt ? new Date(user.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : "â€”";
       profileAboutEl.textContent = user.about || "No description added yet.";
       
       // Hide/Show sections based on userType

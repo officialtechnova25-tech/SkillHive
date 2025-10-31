@@ -1,6 +1,8 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="config.js"></script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login - Skill Hive</title>
@@ -56,6 +58,8 @@
   <div id="tsparticles"></div>
 
   <header class="sticky-top">
+    <script src="config.js"></script>
+
     <div class="container d-flex justify-content-between align-items-center py-2">
       <div style="flex: 1 1 0;">
         <a class="navbar-brand d-flex align-items-center" href="index.html">
@@ -128,7 +132,7 @@
     const loginForm = document.getElementById("loginForm");
     const errorMessage = document.getElementById("errorMessage");
 
-    // ✅ Handle login
+    // âœ… Handle login
     loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       errorMessage.classList.add("d-none");
@@ -137,7 +141,7 @@
       const password = document.getElementById("password").value.trim();
 
       try {
-        const response = await fetch("http://localhost:5000/api/auth/login", {
+        const response = await fetch("${API_BASE_URL}/auth/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
@@ -146,7 +150,7 @@
         const data = await response.json();
         if (!response.ok) throw new Error(data.message || "Invalid credentials");
 
-        // ✅ Save token
+        // âœ… Save token
         localStorage.setItem("token", data.token);
         
         // --- THIS IS THE FIX ---
@@ -242,7 +246,7 @@
       const isCurrentlyDark = body.getAttribute("data-bs-theme") === "dark";
       setTheme(!isCurrentlyDark);
     });
-  // ✅ Toast helper function
+  // âœ… Toast helper function
   function showToast(message, type = "success") {
     const toastEl = document.getElementById("loginToast");
     const toastMsg = document.getElementById("toastMessage");

@@ -1,7 +1,9 @@
-
+﻿
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="light">
 <head>
+    <script src="config.js"></script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Panel - Skill Hive</title>
@@ -55,6 +57,8 @@
 
 <body>
   <header class="sticky-top py-2">
+    <script src="config.js"></script>
+
   <div class="offcanvas offcanvas-start" tabindex="-1" id="mainOffcanvas" aria-labelledby="mainOffcanvasLabel">
     <div class="offcanvas-header">
       <h5 class="offcanvas-title" id="mainOffcanvasLabel">Skill Hive Menu</h5>
@@ -110,21 +114,21 @@
   document.addEventListener("DOMContentLoaded", async () => {
     lucide.createIcons();
 
-    // 🔹 Theme toggle setup
+    // ðŸ”¹ Theme toggle setup
     const themeIcon = document.getElementById("themeIcon");
     const darkModeToggle = document.getElementById("darkModeToggle");
     const savedTheme = localStorage.getItem("theme") || "light";
     document.documentElement.setAttribute("data-bs-theme", savedTheme);
     lucide.createIcons();
 
-    // 🔹 Logout
+    // ðŸ”¹ Logout
     document.getElementById("logoutBtn").addEventListener("click", () => {
       localStorage.removeItem("token");
       window.location.href = "login.html";
     });
 
-    // 🔹 Backend API setup
-    const API_URL = "http://localhost:5000/api/users";
+    // ðŸ”¹ Backend API setup
+    const API_URL = "${API_BASE_URL}/users";
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -167,11 +171,12 @@
 
   // Redirect if not logged in or not admin
   if (!token || user.role !== "admin") {
-    alert("Access denied — admin privileges required.");
+    alert("Access denied â€” admin privileges required.");
     window.location.href = "index.html";
   }
 </script>
 
 </body>
 </html>
+
 
