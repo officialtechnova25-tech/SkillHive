@@ -2,41 +2,39 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
+
+// ES module path helpers
 import path from "path";
 import { fileURLToPath } from "url";
 
-// Load environment variables
 dotenv.config();
 
-// Express app setup
 const app = express();
-
-// Middleware
 app.use(express.json());
 app.use(cors());
 
-// File path helpers (for ES modules)
+// File path setup
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Import routes
+// ✅ Import routes
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/users.js";
 import feedbackRoutes from "./routes/feedbackRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
 
-// Mount routes
+// ✅ Mount routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/feedback", feedbackRoutes);
 app.use("/api/projects", projectRoutes);
 
-// ✅ Render-friendly root route
+// ✅ Health check / Render root
 app.get("/", (req, res) => {
-  res.send("✅ SkillHive backend is live on Render 🚀");
+  res.status(200).send("✅ SkillHive backend is live on Render 🚀");
 });
 
-// MongoDB connection
+// ✅ MongoDB connection
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI);
@@ -47,9 +45,8 @@ const connectDB = async () => {
   }
 };
 
-// Start server
+// ✅ Start the server
 const PORT = process.env.PORT || 5000;
-
 app.listen(PORT, async () => {
   await connectDB();
   console.log(`🚀 Server running at http://localhost:${PORT}`);
