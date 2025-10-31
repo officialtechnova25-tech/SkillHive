@@ -137,3 +137,6 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+# Ignore local Mongo binaries
+skillhive-backend/mongosh.exe
+skillhive-backend/mongosh_crypt_v1.dll
