@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>My Profile - Skill Hive</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.11.1/tsparticles.bundle.min.js"></script>
+  
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/css/select2.min.css" rel="stylesheet" />
+  
+  <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet" />
+
+  <style>
+    /* Layout styles */
+    .profile-container {
+        display: flex;
+        flex-wrap: wrap; /* Allows wrapping on smaller screens */
+        gap: 20px; /* Space between columns */
+        max-width: 1100px;
+        margin: auto;
+        border-radius: 14px;
+        overflow: hidden;
+        background-color: var(--bs-body-bg); /* Use body background for glass effect */
+        box-shadow: var(--bs-box-shadow-sm); /* Subtle shadow */
+    }
+
+    .profile-left-col {
+        flex: 0 0 300px; /* Fixed width for the left column */
+        background-color: var(--bs-card-bg); /* Card background for this pane */
+        padding: 20px;
+        border-right: 1px solid var(--bs-border-color);
+        text-align: center;
+        border-radius: 14px 0 0 14px; /* Rounded corners for left pane */
+    }
+
+    .profile-right-col {
+        flex: 1; /* Takes remaining space */
+        min-width: 0; /* Allows content to shrink */
+        padding: 20px;
+        display: flex;
+        flex-direction: column; /* Stack content vertically */
+        gap: 20px; /* Space between sections in right column */
+        border-radius: 0 14px 14px 0; /* Rounded corners for right pane */
+    }
+
+    @media (max-width: 900px) {
+        .profile-container {
+            flex-direction: column;
+            border-radius: 14px; /* Full border-radius on small screens */
+        }
+        .profile-left-col {
+            flex: auto;
+            width: 100%;
+            border-right: none;
+            border-bottom: 1px solid var(--bs-border-color);
+            border-radius: 14px 14px 0 0; /* Rounded top corners */
+        }
+        .profile-right-col {
+            flex: auto;
+            width: 100%;
+            border-radius: 0 0 14px 14px; /* Rounded bottom corners */
+        }
+    }
+
+
+    /* Additional page-specific styles */
+    .avatar { width: 140px; height: 140px; border-radius: 50%; object-fit: cover; border: 4px solid var(--bs-primary); box-shadow: 0 10px 30px rgba(var(--bs-primary-rgb), 0.12); display:block; margin: 0 auto 12px; }
+    [data-bs-theme="dark"] .avatar { border-color: var(--bs-primary); box-shadow: 0 10px 30px rgba(var(--bs-primary-rgb), 0.15); }
+    .skill-tag { padding: 6px 12px; margin: 4px; background: var(--bs-primary-bg-subtle); color: var(--bs-primary-text-emphasis); border-radius: 18px; font-weight:500; font-size: 0.85rem; }
+    .change-photo { cursor:pointer; color: var(--bs-link-color); text-decoration:underline; display:inline-block; margin-bottom:10px; font-size: 0.9rem; }
+    .change-photo:hover { color: var(--bs-link-hover-color); }
+    @keyframes fadeInUp { from {opacity:0; transform:translateY(12px)} to {opacity:1; transform:translateY(0)} }
+    .fade-in-up { animation: fadeInUp .45s ease-out both; }
+
+    /* --- Select2 Base Styles (Adjusted for Bootstrap 5 variables) --- */
+    .select2-container .select2-selection--multiple,
+    .select2-container .select2-selection--single {
+        min-height: calc(1.5em + 0.75rem + 2px);
+        border: 1px solid var(--bs-border-color);
+        border-radius: var(--bs-border-radius);
+        background-color: var(--bs-body-bg);
+        padding-bottom: 0; /* Align tags better */
+    }
+    .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+        line-height: calc(1.5em + .75rem); /* Vertically center single select */
+    }
+
+    /* Style for each selected choice */
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        background-color: var(--bs-primary); /* Primary color background */
+        color: var(--bs-btn-primary-color); /* Primary button text color (usually white) */
+        border: 1px solid var(--bs-primary); /* Primary color border */
+        padding: 4px 8px; /* A bit smaller for tags */
+        margin-top: 6px; /* Align vertically */
+        margin-right: 0.25rem; /* Small right margin */
+        border-radius: var(--bs-border-radius); /* Match button radius */
+        display: flex; /* Use flexbox for inner alignment */
+        align-items: center;
+        gap: 0.5rem; /* Space between text and 'x' */
+        float: left; /* Keep old float behavior for wrapping */
+        line-height: 1.5; /* Ensure proper line height */
+    }
+
+    /* Style for the remove 'x' */
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+        color: var(--bs-btn-primary-color); /* Match text color */
+        float: none; /* Remove float from 'x' as parent is flex */
+        order: 2; /* Position 'x' after text in flex */
+        padding: 0; /* Remove default padding */
+        opacity: 0.7;
+        font-size: 1.1em; /* Make 'x' slightly bigger */
+        font-weight: 700;
+    }
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+        opacity: 1;
+        background-color: transparent; /* No background on hover */
+    }
+
+    /* Search input for multiple selections */
+    .select2-container--default .select2-search--inline .select2-search__field {
+        margin-top: 6px; /* Align with selected choices */
+        color: var(--bs-body-color);
+        border: none; /* Remove border from search field */
+        padding: 0; /* Remove default padding */
+        height: auto; /* Allow height to adjust */
+        line-height: 1.5;
+    }
+    .select2-container--default .select2-search--inline .select2-search__field::placeholder {
+        color: var(--bs-secondary-color);
+    }
+
+
+    /* --- Select2 Dark Mode Fixes (Updated to match button style) --- */
+    [data-bs-theme="dark"] .select2-container { color: var(--bs-body-color); }
+    [data-bs-theme="dark"] .select2-dropdown { background-color: #2b3035; border-color: var(--bs-border-color); color: var(--bs-body-color); }
+    [data-bs-theme="dark"] .select2-search__field { background-color: #343a40; border-color: var(--bs-border-color); color: var(--bs-body-color); }
+    [data-bs-theme="dark"] .select2-results__option { color: var(--bs-body-color); }
+    [data-bs-theme="dark"] .select2-results__option--highlighted { background-color: var(--bs-primary); color: white; }
+    [data-bs-theme="dark"] .select2-results__option[aria-selected=true] { background-color: rgba(var(--bs-primary-rgb), 0.2); color: var(--bs-primary-text-emphasis); }
+    [data-bs-theme="dark"] .select2-selection--single,
+    [data-bs-theme="dark"] .select2-selection--multiple { background-color: var(--bs-body-bg); border-color: var(--bs-border-color); }
+    [data-bs-theme="dark"] .select2-selection--single .select2-selection__rendered { color: var(--bs-body-color); }
+    
+    /* Dark mode specific choice styling - NOW MATCHES primary button */
+    [data-bs-theme="dark"] .select2-selection--multiple .select2-selection__choice {
+        background-color: var(--bs-primary); /* Use primary color directly */
+        color: var(--bs-btn-primary-color); /* White text */
+        border: 1px solid var(--bs-primary); /* Primary color border */
+    }
+    [data-bs-theme="dark"] .select2-selection--multiple .select2-selection__choice__remove {
+        color: var(--bs-btn-primary-color); /* White 'x' */
+    }
+
+    /* --- END Select2 Dark Mode Fixes --- */
+
+    /* --- SKILL/INTEREST LIST BOX STYLE --- */
+    .skill-list-container {
+      background-color: var(--bs-body-bg); /* Use card background for consistency */
+      border-radius: 8px;
+      padding: 0; /* Remove padding here, items will have it */
+      border: 1px solid var(--bs-border-color);
+    }
+    
+    .skill-list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      color: var(--bs-body-color);
+      border-bottom: 1px solid var(--bs-border-color-translucent);
+    }
+
+    .skill-list-item:last-child {
+      border-bottom: none;
+    }
+
+    .skill-list-item span {
+      font-weight: 500;
+    }
+    
+    .skill-list-container .text-muted.empty-message {
+      color: var(--bs-secondary-color) !important;
+      padding: 1rem;
+      text-align: center;
+      display: block; /* Ensure it takes full width */
+    }
+
+    /* === NEW CROPPER MODAL STYLES === */
+    #cropModal .modal-lg {
+      max-width: 900px;
+    }
+    .img-container-cropper {
+      width: 100%;
+      max-height: 60vh; /* Limit image height */
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    #imageToCrop {
+      max-width: 100%; /* Important for cropper */
+    }
+    /* === END NEW STYLES === */
+
+    /* === UI SIZE ADJUSTMENTS === */
+    /* Make header buttons slightly larger */
+    .glass-header .btn[data-bs-target="#mainOffcanvas"],
+    .glass-header #darkModeToggle {
+        padding: 0.5rem 0.8rem; /* Default is 0.375rem 0.75rem */
+        line-height: 1;
+    }
+    
+    /* Make icons inside header buttons larger */
+    .glass-header .btn[data-bs-target="#mainOffcanvas"] i,
+    .glass-header #darkModeToggle i {
+        width: 28px; /* Default is 24px */
+        height: 28px;
+        stroke-width: 2.5; /* Make icon lines thicker */
+    }
+
+    /* Make offcanvas menu links larger */
+    .offcanvas-body .nav-links li a {
+        font-size: 1.1rem; /* Increase text size */
+        padding: 14px 16px; /* Increase padding */
+        gap: 12px; /* Space between icon and text */
+        display: flex;
+        align-items: center;
+    }
+    
+    /* Adjust icon size in menu links */
+    .offcanvas-body .nav-links li a i {
+        width: 22px;
+        height: 22px;
+        stroke-width: 2.5;
+    }
+    /* === END UI SIZE ADJUSTMENTS === */
+
+    /* === CERTIFICATE STYLES === */
+    #certificateList .list-group-item {
+        background-color: var(--bs-body-bg);
+        border-bottom: 1px solid var(--bs-border-color-translucent);
+    }
+    #certificateList .list-group-item:last-child {
+        border-bottom: none;
+    }
+    #certificateList .cert-icon {
+        width: 20px;
+        height: 20px;
+        margin-right: 10px;
+    }
+    #certificateList .cert-link {
+        text-decoration: none;
+        font-weight: 500;
+        color: var(--bs-body-color);
+    }
+    #certificateList .cert-link:hover {
+        color: var(--bs-primary);
+    }
+    /* === END CERTIFICATE STYLES === */
+
+  </style>
+</head>
+
+<body data-bs-theme="light" class="dashboard-page">
+  <div id="tsparticles"></div>
+
+  <header class="sticky-top glass-effect glass-header py-2">
+    <div class="container d-flex align-items-center">
+      <button class="btn btn-primary me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#mainOffcanvas"> <i data-lucide="menu"></i> </button>
+      <a class="navbar-brand mx-auto d-flex align-items-center" href="index.html" style="gap:.5rem"> <img src="assets/images/skillhive-logo.png" alt="Skill Hive" height="48" /> <span style="font-family:'Orbitron',sans-serif;font-weight:700;">Skill Hive</span> </a>
+      <div class="d-flex align-items-center"> <div id="auth-section"></div> <button id="darkModeToggle" class="btn btn-outline-secondary ms-2" title="Toggle theme"> <i id="themeIcon" data-lucide="moon"></i> </button> </div>
+    </div>
+  </header>
+
+  <main class="container my-5">
+    <div class="glass-effect profile-container">
+      
+      <div class="profile-left-col">
+        <img id="profilePic" class="avatar" src="/uploads/profile-pics/default.png" alt="Profile" />
+        <div> <label for="fileInput" class="change-photo">Change photo</label> <input id="fileInput" type="file" accept="image/*" style="display:none" /> </div>
+        <h3 id="profile-name" class="mt-2 mb-0">—</h3>
+        <p id="profile-email" class="text-muted mb-2">—</p>
+        <p><span id="profile-userType" class="badge rounded-pill px-3 py-1">—</span></p>
+        
+        <button id="openEditBtn" class="btn btn-primary w-100 mt-4">Edit Profile</button>
+      </div>
+
+      <div class="profile-right-col fade-in-up">
+        
+          <div class="card card-body glass-effect p-3">
+              <h5 class="mb-3">Personal Details</h5>
+              <p class="mb-2 d-flex justify-content-between"><strong>Gender:</strong> <span id="profile-gender">—</span></p>
+              <p class="mb-2 d-flex justify-content-between"><strong>Location:</strong> <span id="profile-location">—</span></p>
+              <p class="mb-2 d-flex justify-content-between"><strong>Language:</strong> <span id="profile-language">—</span></p>
+              <p class="mb-0 d-flex justify-content-between"><strong>Member Since:</strong> <span id="profile-joined">—</span></p>
+          </div>
+          
+          <div class="card card-body glass-effect p-3">
+              <h5 class="mb-3">About Me</h5>
+              <p id="profile-about" class="text-muted mb-0">No description added yet.</p>
+          </div>
+          
+          <div id="skillsOfferingSection" class="card card-body glass-effect p-3">
+              <h5 class="mb-3" id="skills-heading">My Skills (Teaching)</h5>
+              <div id="skillsOfferingList" class="skill-list-container">
+                  </div>
+          </div>
+          
+          <div class="card card-body glass-effect p-3">
+              <h5 class="mb-3">My Interests (Learning)</h5>
+              <div id="learningInterestsList" class="skill-list-container">
+                  </div>
+          </div>
+          
+          <div id="certificatesSection" class="card card-body glass-effect p-3">
+            <h5 class="mb-3">My Certificates</h5>
+            
+            <div id="certificateList" class="list-group list-group-flush mb-3">
+              <span class="text-muted empty-message p-3 text-center">No certificates uploaded yet.</span>
+            </div>
+  
+            <form id="certificateUploadForm">
+              <div class="mb-3">
+                <label for="certificateName" class="form-label">Certificate Name</label>
+                <select class="form-control" id="certificateName" required></select>
+              </div>
+              <div class="mb-3">
+                <label for="certificateFile" class="form-label">Certificate File (PDF or Image)</label>
+                <input type="file" class="form-control" id="certificateFile" accept="image/*,application/pdf" required>
+              </div>
+              <button type="submit" class="btn btn-primary w-100">
+                <i data-lucide="upload" class="me-1" style="width:16px;"></i> Upload Certificate
+              </button>
+              <div id="uploadSpinner" class="text-center mt-2 d-none">
+                <div class="spinner-border spinner-border-sm" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+                <span class="ms-2">Uploading...</span>
+              </div>
+            </form>
+          </div>
+          
+      </div> </div> </main>
+
+  <footer class="glass-effect glass-footer text-center py-3 mt-auto"> <p class="mb-0 text-muted">&copy; 2025 Skill Hive — Learn, Teach, Grow.</p> </footer>
+
+  <div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content glass-effect">
+        <div class="modal-header border-0"> <h5 class="modal-title">Edit Profile</h5> <button class="btn-close" data-bs-dismiss="modal"></button> </div>
+        <div class="modal-body">
+          <form id="editProfileForm" class="needs-validation" novalidate>
+            <div class="mb-3"> <label class="form-label">Full Name</label> <input id="editName" class="form-control" pattern="[a-zA-Z\s]+" required /> <div class="invalid-feedback">Name must contain only letters and spaces.</div> </div>
+            <div class="mb-3"> <label class="form-label">Email</label> <input id="editEmail" type="email" class="form-control" required readonly disabled/> <div class="invalid-feedback">Please enter a valid email address.</div> </div>
+            <div class="mb-3"> <label class="form-label">Gender</label> <select id="editGender" class="form-select"> <option value="not specified">Prefer not to say</option> <option value="male">Male</option> <option value="female">Female</option> <option value="other">Other</option> </select> </div>
+            <div class="mb-3"> <label class="form-label">Location</label> <input id="editLocation" class="form-control" placeholder="e.g., Kochi, India" required /> <div class="invalid-feedback">Please enter your location.</div> </div>
+            <div class="mb-3"> <label class="form-label">Language</label> <select id="editLanguage" class="form-select" required> <option value="">Select Language...</option> <option>English</option> <option>Spanish</option> <option>French</option> <option>German</option> <option>Hindi</option> <option>Malayalam</option> <option>Other</option> </select> <div class="invalid-feedback">Please select your primary language.</div> </div>
+            <div class="mb-3"> <label class="form-label">I am here to...</label> <div class="btn-group w-100" role="group" id="userTypeRadios"> <input type="radio" class="btn-check" name="userType" id="typeStudy" value="study"> <label class="btn btn-outline-primary" for="typeStudy">Study</label> <input type="radio" class="btn-check" name="userType" id="typeTeach" value="teach"> <label class="btn btn-outline-primary" for="typeTeach">Teach</label> <input type="radio" class="btn-check" name="userType" id="typeBoth" value="both"> <label class="btn btn-outline-primary" for="typeBoth">Both</label> </div> </div>
+            
+            <div class="mb-3" id="skillsInputWrapper"> 
+              <label class="form-label">My Skills (I can teach)</label> 
+              <select id="editSkillInput" class="form-select" multiple="multiple">
+                </select>
+              <div class="invalid-feedback">Skills are required if you want to teach.</div> 
+            </div>
+
+            <div class="mb-3" id="interestsInputWrapper"> 
+              <label class="form-label">Skills I want to learn (Interests)</label> 
+              <select id="editLearningInterestsInput" class="form-select" multiple="multiple"> </select> 
+            </div>
+            
+            <div class="mb-3"> <label class="form-label">About Me</label> <textarea id="editAbout" class="form-control" rows="3" placeholder="Write a short bio..." maxlength="500"></textarea> </div>
+            <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="offcanvas offcanvas-start" tabindex="-1" id="mainOffcanvas" aria-labelledby="mainOffcanvasLabel">
+    <div class="offcanvas-header"> <h5 class="offcanvas-title" id="mainOffcanvasLabel">Skill Hive Menu</h5> <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button> </div>
+    <div class="offcanvas-body d-flex flex-column">
+      <ul class="list-unstyled nav-links">
+        <li class="text-muted small mb-2 text-start">MAIN MENU</li>
+        <li><a href="index.html"><i data-lucide="home"></i> Home</a></li>
+        <li id="dashboard-menu-item"><a href="dashboard.html"><i data-lucide="layout-dashboard"></i> Dashboard</a></li>
+        <li><a href="profile.html" class="active"><i data-lucide="user"></i> My Profile</a></li>
+        <li><a href="search.html"><i data-lucide="search"></i> Find Skills</a></li>
+      </ul>
+      <hr />
+      <ul class="list-unstyled nav-links">
+        <li class="text-muted small mb-2 text-start">SETTINGS</li>
+        <li><a href="notifications.html"><i data-lucide="bell"></i> Notifications</a></li>
+        <li><a href="settings.html"><i data-lucide="settings"></i> Account Settings</a></li>
+        <li><a href="help.html"><i data-lucide="help-circle"></i> Help & Support</a></li>
+        <li id="adminPanelLink" style="display:none;"><a href="admin.html"><i data-lucide="shield"></i> Admin Panel</a></li>
+      </ul>
+      <div id="offcanvas-auth-links" class="mt-auto"></div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="cropModal" tabindex="-1" aria-labelledby="cropModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content glass-effect">
+        <div class="modal-header border-0">
+          <h5 class="modal-title" id="cropModalLabel">Crop Your Image</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="img-container-cropper">
+            <img id="imageToCrop" src="" alt="Crop preview">
+          </div>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="cropAndUploadBtn">Save and Upload</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+    <div id="notificationToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <i id="toastIcon" data-lucide="check-circle" class="me-2 text-success"></i>
+        <strong class="me-auto" id="toastTitle">Success</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body" id="toastBody">
+        Profile saved successfully!
+      </div>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/js/select2.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+  <script>
+  let SKILL_OPTIONS = [];
+  document.addEventListener("DOMContentLoaded", () => {
+    const token = localStorage.getItem("token") || "";
+    const fileInput = document.getElementById("fileInput");
+    const profilePicEl = document.getElementById("profilePic");
+    const profileNameEl = document.getElementById("profile-name");
+    const profileEmailEl = document.getElementById("profile-email");
+    const profileUserTypeEl = document.getElementById("profile-userType");
+    const profileGenderEl = document.getElementById("profile-gender");
+    const profileLocationEl = document.getElementById("profile-location");
+    const profileLanguageEl = document.getElementById("profile-language");
+    const profileAboutEl = document.getElementById("profile-about");
+    const profileJoinedEl = document.getElementById("profile-joined");
+    const skillsSection = document.getElementById("skillsOfferingSection");
+    const skillsEl = document.getElementById("skillsOfferingList");
+    const skillsHeading = document.getElementById("skills-heading");
+    const interestsEl = document.getElementById("learningInterestsList");
+    const editBtn = document.getElementById("openEditBtn");
+    const editModalEl = document.getElementById("editProfileModal");
+    const editForm = document.getElementById("editProfileForm");
+    const editName = document.getElementById("editName");
+    const editEmail = document.getElementById("editEmail");
+    const editGender = document.getElementById("editGender");
+    const editLocation = document.getElementById("editLocation");
+    const editLanguage = document.getElementById("editLanguage");
+    const $editLearningInterestsInput = $('#editLearningInterestsInput');
+    const $editSkillInput = $('#editSkillInput'); 
+    const editAbout = document.getElementById("editAbout");
+    const userTypeRadios = document.getElementById("userTypeRadios");
+    const adminPanelLink = document.getElementById("adminPanelLink");
+    const authSection = document.getElementById("auth-section");
+    const offcanvasAuthLinks = document.getElementById("offcanvas-auth-links");
+    const darkModeToggle = document.getElementById("darkModeToggle");
+    const themeIcon = document.getElementById("themeIcon");
+
+    // === CERTIFICATE CONSTS ===
+    const certificatesSection = document.getElementById("certificatesSection");
+    const certificateList = document.getElementById("certificateList");
+    const certificateUploadForm = document.getElementById("certificateUploadForm");
+    const $certificateNameInput = $('#certificateName'); // Changed
+    const certificateFile = document.getElementById("certificateFile");
+    const uploadSpinner = document.getElementById("uploadSpinner");
+    
+    // === WRAPPER CONSTS ===
+    const skillsWrapper = document.getElementById("skillsInputWrapper");
+    const interestsWrapper = document.getElementById("interestsInputWrapper");
+
+    let currentUser = null;
+    let isLoggedIn = false;
+    let isSelect2Initialized = false;
+    let isSkillSelectInitialized = false; 
+    let isCertSelectInitialized = false; // <-- NEW
+
+    const cropModalEl = document.getElementById('cropModal');
+    const imageToCropEl = document.getElementById('imageToCrop');
+    const cropAndUploadBtn = document.getElementById('cropAndUploadBtn');
+    let cropModal = null;
+    let cropper = null;
+
+    const toastEl = document.getElementById('notificationToast');
+    const toastBody = document.getElementById('toastBody');
+    const toastTitle = document.getElementById('toastTitle');
+    const toastIcon = document.getElementById('toastIcon');
+    let notificationToast = null;
+    if (toastEl) {
+        notificationToast = new bootstrap.Toast(toastEl, { delay: 3500 });
+    }
+
+
+    const getAuthHeaders = (json = true) => { 
+        const headers = {}; 
+        if (json) headers["Content-Type"] = "application/json"; 
+        if (token) headers["Authorization"] = `Bearer ${token}`; 
+        return headers; 
+    };
+    const loadParticles = () => { if (typeof tsParticles === 'undefined') return; try { if (window.tsParticles?.dom?.length) window.tsParticles.dom.forEach(d => d.destroy()); const color = getComputedStyle(document.body).getPropertyValue('--bs-primary').trim() || "#0d6efd"; tsParticles.load("tsparticles", { fpsLimit: 60, particles: { number: { value: 40 }, color: { value: color }, opacity: { value: { min: 0.1, max: 0.3 } }, size: { value: { min: 8, max: 18 } }, move: { enable: true, speed: 1.0 } } }); } catch (e) { console.error("tsParticles error", e); } };
+    function setTheme(theme) { const isDark = theme === "dark"; document.body.setAttribute("data-bs-theme", theme); if (themeIcon) themeIcon.setAttribute("data-lucide", isDark ? "sun" : "moon"); try { lucide.createIcons(); } catch (e) { console.warn("Lucide error:", e); } localStorage.setItem("theme", theme); setTimeout(loadParticles, 50); }
+    try { const savedTheme = localStorage.getItem("theme"); const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches; setTheme(savedTheme ? savedTheme : (prefersDark ? "dark" : "light")); if (darkModeToggle) { darkModeToggle.addEventListener("click", () => { const newTheme = document.body.getAttribute("data-bs-theme") === "dark" ? "light" : "dark"; setTheme(newTheme); }); } } catch (err) { console.error("Theme init error", err); }
+
+
+    function showToast(message, title = "Success", type = "success") {
+      if (!notificationToast || !toastBody || !toastTitle || !toastIcon) {
+        console.warn("Toast elements not found, falling back to alert.");
+        alert(message); 
+        return;
+      }
+      toastBody.textContent = message;
+      toastTitle.textContent = title;
+      toastIcon.classList.remove('text-success', 'text-danger', 'text-warning');
+      if (type === 'success') {
+        toastIcon.setAttribute('data-lucide', 'check-circle');
+        toastIcon.classList.add('text-success');
+      } else if (type === 'error') {
+        toastIcon.setAttribute('data-lucide', 'alert-triangle');
+        toastIcon.classList.add('text-danger');
+      } else { 
+        toastIcon.setAttribute('data-lucide', 'info');
+        toastIcon.classList.add('text-warning');
+      }
+      try { lucide.createIcons(); } catch(e){ console.warn("Lucide error in toast", e); } 
+      notificationToast.show();
+    }
+
+
+    const initializeSelect2 = (currentInterests) => {
+      if (typeof jQuery === 'undefined' || typeof $.fn.select2 === 'undefined') { console.error("jQuery or Select2 is not loaded."); return; }
+      if (isSelect2Initialized) { try { $editLearningInterestsInput.select2('destroy'); } catch (e) { console.warn("Select2 destroy failed", e); } isSelect2Initialized = false; }
+      try {
+        $editLearningInterestsInput.select2({
+          theme: 'bootstrap-5',
+          placeholder: 'Select skills to learn...',
+          allowClear: true,
+          width: '100%',
+          minimumResultsForSearch: Infinity 
+        });
+        isSelect2Initialized = true;
+        populateInterestsDropdown(currentInterests);
+      } catch (e) { console.error("Select2 initialization failed:", e); }
+    };
+
+    const initializeSkillTagInput = (currentSkills) => {
+        if (typeof jQuery === 'undefined' || typeof $.fn.select2 === 'undefined') { console.error("jQuery or Select2 is not loaded for skills."); return; }
+        if (isSkillSelectInitialized) {
+            try { $editSkillInput.select2('destroy'); } catch (e) { console.warn("Skill Select2 destroy failed", e); }
+            isSkillSelectInitialized = false;
+        }
+
+        $editSkillInput.empty(); 
+        
+        const selectedSkillNames = (currentSkills || []).map(s => (typeof s === 'object' && s.name) ? s.name : (typeof s === 'string' ? s : null)).filter(Boolean);
+
+        SKILL_OPTIONS.forEach(skillName => {
+            const isSelected = selectedSkillNames.includes(skillName);
+            const option = new Option(skillName, skillName, isSelected, isSelected);
+            $editSkillInput.append(option);
+        });
+
+        selectedSkillNames.forEach(skillName => {
+            if (!SKILL_OPTIONS.includes(skillName)) {
+                const option = new Option(skillName, skillName, true, true);
+                $editSkillInput.append(option);
+            }
+        });
+
+        try {
+            $editSkillInput.select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Select or type a skill...',
+                tags: true, 
+                tokenSeparators: [','], 
+                width: '100%'
+            });
+            isSkillSelectInitialized = true;
+            $editSkillInput.val(selectedSkillNames).trigger('change'); 
+        } catch (e) { console.error("Skill Select2 initialization failed:", e); }
+    };
+    
+    // === NEW FUNCTION: initializeCertificateNameInput ===
+    const initializeCertificateNameInput = () => {
+        if (typeof jQuery === 'undefined' || typeof $.fn.select2 === 'undefined') { 
+            console.error("jQuery or Select2 is not loaded for certs.");
+            return; 
+        }
+        if (isCertSelectInitialized) {
+            try { $certificateNameInput.select2('destroy'); } catch (e) { console.warn("Cert Select2 destroy failed", e); }
+            isCertSelectInitialized = false;
+        }
+
+        $certificateNameInput.empty(); // Clear old options
+        // Add a blank option so the placeholder will show
+        $certificateNameInput.append(new Option("", "", true, true)); 
+
+        // Add all fetched skills as options
+        SKILL_OPTIONS.forEach(skillName => {
+            const option = new Option(skillName, skillName, false, false);
+            $certificateNameInput.append(option);
+        });
+
+        try {
+            $certificateNameInput.select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Select or type certificate name...',
+                tags: true, // Allow creating new tags
+                width: '100%'
+            });
+            isCertSelectInitialized = true;
+            $certificateNameInput.val(null).trigger('change'); // Ensure placeholder is shown
+        } catch (e) {
+            console.error("Certificate Select2 initialization failed:", e);
+        }
+    };
+    // === END NEW FUNCTION ===
+
+
+    if (editModalEl) { 
+      editModalEl.addEventListener('shown.bs.modal', function () { 
+        if (currentUser) {
+          initializeSelect2(currentUser.learningInterests || []); 
+          initializeSkillTagInput(currentUser.skills || []); 
+          toggleSkillField(); // <-- Make sure form visibility is correct when modal opens
+        }
+      }); 
+      editModalEl.addEventListener('hidden.bs.modal', function () { 
+        if (isSelect2Initialized) { 
+          try { $editLearningInterestsInput.select2('destroy'); } catch (e) { console.warn("Select2 destroy failed on hide", e); } 
+          isSelect2Initialized = false; 
+        }
+        if (isSkillSelectInitialized) { 
+          try { $editSkillInput.select2('destroy'); } catch (e) { console.warn("Skill Select2 destroy failed on hide", e); }
+          isSkillSelectInitialized = false;
+        }
+      }); 
+    }
+
+    function populateInterestsDropdown(currentInterests) {
+      if (typeof jQuery === 'undefined' || !isSelect2Initialized) return;
+      const selectedNames = (currentInterests || []).map(s => (typeof s === 'object' && s.name) ? s.name : (typeof s === 'string' ? s : null)).filter(Boolean);
+      $editLearningInterestsInput.empty();
+      SKILL_OPTIONS.forEach(skillName => { if (!skillName) return; const isSelected = selectedNames.includes(skillName); const option = new Option(skillName, skillName, isSelected, isSelected); $editLearningInterestsInput.append(option); });
+      $editLearningInterestsInput.val(selectedNames); $editLearningInterestsInput.trigger('change');
+    }
+
+    function setupAuthUI(user) {
+        const storedToken = localStorage.getItem("token"); isLoggedIn = !!storedToken; 
+        const loginLink = 'login.html';
+        const signupLink = 'signup.html';
+        if(authSection && offcanvasAuthLinks) {
+            if (isLoggedIn && user) {
+                authSection.innerHTML = `<button id="logoutBtn" class="btn btn-outline-danger btn-sm"><i data-lucide="log-out" class="me-1" style="width:16px; height:16px;"></i>Logout</button>`;
+                offcanvasAuthLinks.innerHTML = `<button id="offcanvasLogoutBtn" class="btn btn-outline-danger w-100"><i data-lucide="log-out" class="me-1"></i>Logout</button>`;
+                const logout = () => { localStorage.clear(); window.location.href = loginLink; };
+                document.addEventListener('click', function(event) { if (event.target && event.target.id === 'logoutBtn') logout(); if (event.target && event.target.id === 'offcanvasLogoutBtn') logout(); });
+            } else {
+                authSection.innerHTML = `<a href="${loginLink}" class="btn btn-outline-primary btn-sm me-2"><i data-lucide="log-in" class="me-1" style="width:16px; height:16px;"></i>Login</a><a href="${signupLink}" class="btn btn-primary btn-sm"><i data-lucide="user-plus" class="me-1" style="width:16px; height:16px;"></i>Sign Up</a>`;
+                offcanvasAuthLinks.innerHTML = `<a href="${loginLink}" class="btn btn-outline-primary w-100 mb-2">Login</a><a href="${signupLink}" class="btn btn-primary w-100">Sign Up</a>`;
+            }
+        }
+        try { lucide.createIcons(); } catch(e) { console.warn("Lucide error in setupAuthUI:", e);}
+    }
+
+    async function fetchSkillOptions() {
+      try { 
+        const res = await fetch("/api/skills", { headers: getAuthHeaders(false) }); 
+        if (!res.ok) throw new Error(`Could not load skills list: ${res.statusText}`); 
+        const skills = await res.json(); 
+        if (Array.isArray(skills)) { 
+          SKILL_OPTIONS = skills.map(s => s.name).filter(name => name && name.trim()).sort(); 
+          console.log("Fetched Skills:", SKILL_OPTIONS);
+          initializeCertificateNameInput(); // <-- Initialize cert dropdown AFTER skills are fetched
+        } else { 
+          console.error("Skills API did not return an array:", skills); 
+          SKILL_OPTIONS = ["ErrorLoadingSkills"]; 
+        } 
+      } catch (err) { 
+        console.error("Failed to fetch skills:", err); 
+        SKILL_OPTIONS = ["Web Development", "Python", "Data Science", "Graphic Design", "Cooking", "Photography", "Music Production"]; 
+        initializeCertificateNameInput(); // <-- Also initialize on error with fallback data
+      }
+    }
+
+    async function fetchCurrentUser() {
+      try { 
+        const res = await fetch("/api/auth/me", { headers: getAuthHeaders() }); 
+        if (!res.ok) { console.warn(`Auth fetch failed: ${res.status}. Redirecting.`); throw new Error("Not authenticated"); } 
+        currentUser = await res.json(); 
+        localStorage.setItem("user", JSON.stringify(currentUser)); 
+        setupAuthUI(currentUser); 
+        populateUI(); 
+      } catch (err) { 
+        console.log("Fetch current user failed, checking cache or redirecting.", err.message); 
+        try { 
+          const cached = JSON.parse(localStorage.getItem("user") || "null"); 
+          if (cached && cached._id) { 
+            console.log("Using cached user data."); 
+            currentUser = cached; 
+            setupAuthUI(currentUser); 
+            populateUI(); 
+          } else { 
+            console.log("No valid cached user, redirecting to login."); 
+            localStorage.clear(); 
+            window.location.href = "login.html";
+          } 
+        } catch (e) { 
+          console.error("Error parsing cached user or redirecting:", e); 
+          localStorage.clear(); 
+          window.location.href = "login.html";
+        } 
+      }
+    }
+
+    function capitalize(s) { return s ? String(s).charAt(0).toUpperCase() + String(s).slice(1).toLowerCase() : ""; }
+    
+    function renderSkillList(element, data, defaultMsg) {
+      if (!element) return;
+      element.innerHTML = ""; // Clear old content
+      const items = Array.isArray(data) ? data : [];
+
+      if (!items.length) {
+        element.innerHTML = `<span class="text-muted empty-message">${defaultMsg}</span>`;
+        return;
+      }
+
+      items.forEach(s => {
+        const name = (typeof s === "object" && s.name) ? s.name : (typeof s === 'string' ? s : null);
+        if (!name || !name.trim()) return;
+        
+        const itemDiv = document.createElement("div");
+        itemDiv.className = "skill-list-item";
+        itemDiv.innerHTML = `<span>${name.trim()}</span>`;
+        element.appendChild(itemDiv);
+      });
+    }
+
+    // === NEW FUNCTION: renderCertificates ===
+    function renderCertificates(certificates) {
+      if (!certificateList) return;
+      certificateList.innerHTML = ""; // Clear list
+      const certs = Array.isArray(certificates) ? certificates : [];
+
+      if (!certs.length) {
+        certificateList.innerHTML = `<span class="text-muted empty-message p-3 text-center">No certificates uploaded yet.</span>`;
+        return;
+      }
+
+      certs.forEach(cert => {
+        const isPdf = cert.filePath.toLowerCase().endsWith('.pdf');
+        const icon = isPdf ? 'file-text' : 'image';
+
+        const li = document.createElement("li");
+        li.className = "list-group-item d-flex justify-content-between align-items-center";
+        li.innerHTML = `
+          <a href="${cert.filePath}" target="_blank" rel="noopener noreferrer" class="cert-link d-flex align-items-center">
+            <i data-lucide="${icon}" class="cert-icon"></i>
+            <span>${cert.name}</span>
+          </a>
+          <span class="text-muted small">${new Date(cert.uploadedAt).toLocaleDateString()}</span>
+        `;
+        certificateList.appendChild(li);
+      });
+      lucide.createIcons(); // Re-render icons
+    }
+    // === END NEW FUNCTION ===
+
+
+    function populateUI() {
+      if (!currentUser) { console.warn("populateUI called but currentUser is null."); return; }
+      
+      const userType = currentUser.userType || "study";
+      
+      if (skillsSection && skillsEl && skillsHeading) {
+          if (userType === 'study') {
+              skillsSection.style.display = 'none';
+          } else {
+              skillsSection.style.display = 'block';
+              renderSkillList(skillsEl, currentUser.skills, "No skills listed yet.");
+          }
+      }
+      
+      // === NEW: Show/Hide certificate section ===
+      if (certificatesSection) {
+          if (userType === 'study') {
+              certificatesSection.style.display = 'none';
+          } else {
+              certificatesSection.style.display = 'block';
+              renderCertificates(currentUser.certificates || []);
+          }
+      }
+      // === END NEW ===
+
+      if (profileNameEl) profileNameEl.textContent = currentUser.name || "—";
+      if (profileEmailEl) profileEmailEl.textContent = currentUser.email || "—";
+      if (profileUserTypeEl) { 
+          profileUserTypeEl.textContent = capitalize(userType); 
+          profileUserTypeEl.className = `badge rounded-pill px-3 py-1 bg-${userType === 'teach' ? 'success' : (userType === 'both' ? 'info' : 'secondary')}-subtle text-${userType === 'teach' ? 'success' : (userType === 'both' ? 'info' : 'secondary')}-emphasis`; 
+      }
+      if (profileGenderEl) profileGenderEl.textContent = capitalize(currentUser.gender) || "Not specified";
+      if (profileLocationEl) profileLocationEl.textContent = currentUser.location || "Not specified";
+      if (profileLanguageEl) profileLanguageEl.textContent = capitalize(currentUser.language) || "Not specified";
+      if (profileAboutEl) profileAboutEl.textContent = currentUser.about || "No description added yet.";
+      if (profileJoinedEl) profileJoinedEl.textContent = (currentUser.createdAt || currentUser.joinedDate) ? new Date(currentUser.createdAt || currentUser.joinedDate).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : "—";
+      
+      if (profilePicEl) {
+        profilePicEl.src = (currentUser.profilePic && typeof currentUser.profilePic === 'string') 
+                           ? currentUser.profilePic 
+                           : "/uploads/profile-pics/default.png";
+      }
+
+      renderSkillList(interestsEl, currentUser.learningInterests, "No interests listed yet.");
+      
+      if (editName) editName.value = currentUser.name || "";
+      if (editEmail) editEmail.value = currentUser.email || "";
+      if (editGender) editGender.value = currentUser.gender || "not specified";
+      if (editLocation) editLocation.value = currentUser.location || "";
+      if (editLanguage) editLanguage.value = currentUser.language || "";
+      if (editAbout) editAbout.value = currentUser.about || "";
+      
+      populateInterestsDropdown(currentUser.learningInterests || []);
+      
+      const userTypeRadio = currentUser.userType || "study";
+      const radio = document.querySelector(`#userTypeRadios input[value="${userTypeRadio}"]`);
+      if (radio) radio.checked = true;
+      toggleSkillField(); // <-- Make sure form visibility is correct on load
+
+      if (adminPanelLink) adminPanelLink.style.display = (currentUser.role === 'admin') ? 'block' : 'none';
+          
+      const profileCompleted = localStorage.getItem("profileCompleted") === "true";
+      if (!profileCompleted && !currentUser.location && !currentUser.language && (!currentUser.skills || currentUser.skills.length === 0)) {
+          console.log("Profile seems incomplete, showing edit modal.");
+          if(editModalEl) { const modal = bootstrap.Modal.getOrCreateInstance(editModalEl); if(modal) modal.show(); }
+      } else { if (!profileCompleted && (currentUser.location || currentUser.language || (currentUser.skills && currentUser.skills.length > 0))) { localStorage.setItem("profileCompleted", "true"); } }
+    }
+
+    async function uploadCroppedImage(formData) {
+      if (!currentUser) return;
+      const userId = currentUser._id;
+      if (!userId) { 
+        showToast("Cannot upload: User ID not found.", "Error", "error"); 
+        return; 
+      }
+
+      try {
+        const res = await fetch(`/api/users/upload/${userId}`, {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${token}` }, 
+          body: formData,
+        });
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({ message: `Upload failed: ${res.statusText}` }));
+          throw new Error(errorData.message || `Upload failed: ${res.status}`);
+        }
+        const result = await res.json();
+        if (result.user && result.user.profilePic) {
+          profilePicEl.src = result.user.profilePic; 
+          currentUser.profilePic = result.user.profilePic;
+          localStorage.setItem("user", JSON.stringify(currentUser));
+          showToast("Profile picture updated!", "Success", "success");
+        } else {
+          showToast("Profile picture updated, but couldn't refresh display data.", "Warning", "warning");
+        }
+      } catch (err) {
+        console.error("Upload error:", err);
+        showToast(err.message, "Upload Error", "error");
+      } finally {
+        if (cropModal) cropModal.hide(); 
+      }
+    }
+
+
+    if (fileInput && profilePicEl && cropModalEl) {
+      cropModal = new bootstrap.Modal(cropModalEl);
+
+      fileInput.addEventListener("change", (e) => {
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
+        const file = files[0];
+        
+        if (!file.type.startsWith('image/')) {
+          showToast("Please select an image file.", "Invalid File", "warning");
+          fileInput.value = ''; 
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          imageToCropEl.src = event.target.result;
+          cropModal.show(); 
+        };
+        reader.readAsDataURL(file);
+      });
+
+      cropModalEl.addEventListener('shown.bs.modal', () => {
+        if (cropper) cropper.destroy(); 
+        cropper = new Cropper(imageToCropEl, {
+          aspectRatio: 1 / 1, 
+          viewMode: 1,        
+          autoCropArea: 0.8,
+          responsive: true,
+          background: false,  
+        });
+      });
+
+      cropModalEl.addEventListener('hidden.bs.modal', () => {
+        if (cropper) cropper.destroy();
+        cropper = null;
+        imageToCropEl.src = ''; 
+        fileInput.value = ''; 
+      });
+
+      cropAndUploadBtn.addEventListener('click', () => {
+        if (!cropper) return;
+        const canvas = cropper.getCroppedCanvas({
+          width: 400,
+          height: 400,
+          imageSmoothingQuality: 'high',
+        });
+        canvas.toBlob((blob) => {
+          if (!blob) {
+            showToast("Could not process image. Please try again.", "Error", "error");
+            return;
+          }
+          const formData = new FormData();
+          formData.append('profilePic', blob, 'profile.jpg'); 
+          uploadCroppedImage(formData);
+        }, 'image/jpeg', 0.9); 
+      });
+    }
+
+
+    if (editBtn && editModalEl) {
+      editBtn.addEventListener("click", () => { const modal = bootstrap.Modal.getOrCreateInstance(editModalEl); if (currentUser) { populateUI(); } if(modal) modal.show(); });
+    }
+
+    // === MODIFIED FUNCTION: toggleSkillField ===
+    function toggleSkillField() {
+      const checked = document.querySelector('#userTypeRadios input[name="userType"]:checked'); 
+      if (!checked || !skillsWrapper || !interestsWrapper) return; 
+      
+      const val = checked.value;
+      
+      if (val === "study") {
+        skillsWrapper.style.display = "none";
+        interestsWrapper.style.display = "block"; // Show interests
+        if (isSkillSelectInitialized) {
+            $editSkillInput.val(null).trigger('change'); 
+        }
+      } else if (val === "teach") {
+        skillsWrapper.style.display = "block";  // Show skills
+        interestsWrapper.style.display = "none"; // HIDE interests
+        if (isSelect2Initialized) {
+            $editLearningInterestsInput.val(null).trigger('change'); // Clear interests
+        }
+      } else { // 'both'
+        skillsWrapper.style.display = "block";
+        interestsWrapper.style.display = "block";
+      }
+    }
+    // === END MODIFIED FUNCTION ===
+
+    if (userTypeRadios) userTypeRadios.addEventListener("change", toggleSkillField);
+
+    if (editForm) {
+      editForm.addEventListener("submit", async (ev) => {
+        ev.preventDefault(); ev.stopPropagation();
+        const nameField = document.getElementById("editName"); const nameValid = nameField && /^[a-zA-Z\s]+$/.test(nameField.value.trim()); if (nameField && !nameValid) nameField.classList.add("is-invalid"); else if (nameField) nameField.classList.remove("is-invalid");
+        if (!editForm.checkValidity() || !nameValid) { editForm.classList.add("was-validated"); return; }
+        
+        const selectedType = document.querySelector("#userTypeRadios input[name='userType']:checked")?.value || "study";
+
+        const selectedSkills = $editSkillInput.val() || [];
+        
+        if ((selectedType === "teach" || selectedType === "both") && selectedSkills.length === 0) { 
+            const skillContainer = $editSkillInput.next('.select2-container');
+            if (skillContainer.length) {
+                skillContainer.find('.select2-selection').addClass('is-invalid');
+            }
+            const feedback = document.querySelector('#skillsInputWrapper .invalid-feedback');
+            if(feedback) feedback.style.display = 'block';
+
+            editForm.classList.add("was-validated"); 
+            return; 
+        } else { 
+            const skillContainer = $editSkillInput.next('.select2-container');
+            if (skillContainer.length) {
+                skillContainer.find('.select2-selection').removeClass('is-invalid');
+            }
+            const feedback = document.querySelector('#skillsInputWrapper .invalid-feedback');
+            if(feedback) feedback.style.display = 'none';
+        }
+        
+        let skillsArr = selectedSkills.map(s => ({ name: s.trim() })).filter(s => s.name);
+        if (selectedType === 'study') {
+            skillsArr = []; 
+            if (isSkillSelectInitialized) $editSkillInput.val(null).trigger('change');
+        }
+
+        const selectedInterests = $editLearningInterestsInput.val() || []; 
+        let interestsArr = selectedInterests.map(name => ({ name: name }));
+
+        if (selectedType === 'teach') {
+            interestsArr = [];
+            if (isSelect2Initialized) $editLearningInterestsInput.val(null).trigger('change');
+        }
+        
+        const payload = { 
+            name: editName ? editName.value.trim() : currentUser.name, 
+            gender: editGender ? editGender.value : currentUser.gender, 
+            location: editLocation ? editLocation.value.trim() : currentUser.location, 
+            language: editLanguage ? editLanguage.value : currentUser.language, 
+            about: editAbout ? editAbout.value.trim() : currentUser.about, 
+            userType: selectedType, 
+            skills: skillsArr, 
+            learningInterests: interestsArr 
+        };
+        console.log("Frontend Payload being sent:", JSON.stringify(payload, null, 2));
+        
+        try { 
+            const userId = currentUser?._id; 
+            if (!userId) throw new Error("Missing user id"); 
+            const res = await fetch(`/api/users/${userId}`, { method: "PUT", headers: getAuthHeaders(true), body: JSON.stringify(payload) }); 
+            const responseBody = await res.text(); 
+            if (!res.ok) { 
+                let errorMsg = `Update failed: ${res.status}`; 
+                try { errorMsg = JSON.parse(responseBody).message || responseBody; } catch (e) { errorMsg = responseBody || errorMsg; } 
+                throw new Error(errorMsg); 
+            } 
+            console.log("Update successful. Server response:", responseBody);
+            
+            currentUser = JSON.parse(responseBody); 
+            localStorage.setItem("user", JSON.stringify(currentUser)); 
+            
+            populateUI(); 
+
+            localStorage.setItem("profileCompleted", "true"); 
+            const modalInstance = bootstrap.Modal.getInstance(editModalEl); 
+            if (modalInstance) modalInstance.hide(); 
+            editForm.classList.remove("was-validated"); 
+            
+            showToast("Profile saved successfully!", "Success", "success");
+            
+            // === NEW: Re-fetch skill options to include new tags ===
+            await fetchSkillOptions();
+            // === END NEW ===
+
+      } catch (err) { 
+          console.error("Update error:", err); 
+          showToast(err.message || String(err), "Update Error", "error");
+        }
+      });
+    }
+
+    // === NEW: CERTIFICATE UPLOAD HANDLER ===
+    if (certificateUploadForm) {
+      certificateUploadForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        
+        // === MODIFIED: Get value from Select2 ===
+        const certName = $certificateNameInput.val();
+        const certFile = certificateFile.files[0];
+
+        if (!certName) {
+          showToast("Please enter a name for your certificate.", "Error", "error");
+          return;
+        }
+        if (!certFile) {
+          showToast("Please select a file to upload.", "Error", "error");
+          return;
+        }
+
+        uploadSpinner.classList.remove('d-none'); // Show spinner
+
+        const formData = new FormData();
+        formData.append('certificateName', certName);
+        formData.append('certificateFile', certFile);
+
+        try {
+          const res = await fetch("/api/users/upload-certificate", {
+            method: "POST",
+            headers: { "Authorization": `Bearer ${token}` }, // No Content-Type
+            body: formData,
+          });
+
+          if (!res.ok) {
+            const errorData = await res.json().catch(() => ({ message: `Upload failed: ${res.statusText}` }));
+            throw new Error(errorData.message || `Upload failed: ${res.status}`);
+          }
+
+          const result = await res.json();
+          
+          currentUser = result.user; // Update current user with new certificate list
+          localStorage.setItem("user", JSON.stringify(currentUser));
+          
+          renderCertificates(currentUser.certificates || []); // Re-render the list
+          showToast("Certificate uploaded!", "Success", "success");
+          
+          // === MODIFIED: Reset form and Select2 field ===
+          certificateUploadForm.reset(); 
+          $certificateNameInput.val(null).trigger('change');
+          
+          // === NEW: Re-fetch skills to include new cert name ===
+          await fetchSkillOptions();
+
+        } catch (err) {
+          console.error("Certificate upload error:", err);
+          showToast(err.message, "Upload Error", "error");
+        } finally {
+          uploadSpinner.classList.add('d-none'); // Hide spinner
+        }
+      });
+    }
+    // === END NEW HANDLER ===
+
+
+    async function main() {
+      try { lucide.createIcons(); } catch (e) { console.warn("Initial Lucide error:", e); }
+      loadParticles();
+      await fetchSkillOptions(); // This now also initializes the certificate dropdown
+      await fetchCurrentUser();
+      // toggleSkillField() is now called inside populateUI
+    }
+    
+    main().catch(err => {
+      console.error("Error during initial page load:", err);
+    });
+
+  }); // DOMContentLoaded
+  </script>
+</body>
+</html>

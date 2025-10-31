@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up - Skill Hive</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="css/styles.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Montserrat:wght@400;500&display=swap" rel="stylesheet" />
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.11.1/tsparticles.bundle.min.js"></script>
+
+  <style>
+    html, body {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      font-family: 'Montserrat', sans-serif;
+    }
+    main {
+      flex: 1 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    footer { flex-shrink: 0; }
+    #tsparticles {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      top: 0;
+      left: 0;
+    }
+    .navbar-brand span {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: 1.4rem;
+    }
+    .animated-heading span {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: letterFadeIn 0.5s ease forwards;
+    }
+    @keyframes letterFadeIn { to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideUpFadeIn { from { opacity: 0; transform: translateY(25px); } to { opacity: 1; transform: translateY(0); } }
+    .animated-card { animation: slideUpFadeIn 0.7s ease-out forwards; animation-delay: 0.2s; opacity: 0; }
+
+    /* --- NEW PASSWORD STRENGTH STYLES --- */
+    .password-strength-meter {
+      margin-top: 10px;
+    }
+    .progress {
+      height: 10px;
+    }
+    #password-requirements {
+      list-style-type: none;
+      padding-left: 0;
+      margin-top: 10px;
+      font-size: 0.85rem;
+    }
+    #password-requirements li {
+      transition: color 0.3s ease;
+      margin-bottom: 4px;
+    }
+    #password-requirements li.invalid {
+      color: var(--bs-danger);
+    }
+    #password-requirements li.valid {
+      color: var(--bs-success);
+      text-decoration: line-through;
+    }
+    #password-requirements li.valid::before {
+      content: '✓ '; /* Checkmark */
+      font-weight: bold;
+      margin-right: 5px;
+    }
+    #password-requirements li.invalid::before {
+      content: '✗ '; /* 'x' mark */
+      font-weight: bold;
+      margin-right: 5px;
+    }
+    /* --- END NEW STYLES --- */
+  </style>
+</head>
+
+<body data-bs-theme="light">
+  <div id="tsparticles"></div>
+
+  <header class="sticky-top">
+    <div class="container d-flex justify-content-between align-items-center py-2">
+      <div style="flex: 1 1 0;">
+        <a class="navbar-brand d-flex align-items-center" href="index.html">
+          <img src="assets/images/skillhive-logo.png" alt="Skill Hive Logo" width="110" height="70" />
+          <span class="ms-2">Skill Hive</span>
+        </a>
+      </div>
+      <div style="flex: 1 1 0;" class="d-flex justify-content-end align-items-center">
+        <button id="darkModeToggle" class="btn btn-outline-secondary ms-2" title="Toggle dark mode">
+          <i id="themeIcon" data-lucide="moon"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="col-md-6 col-lg-5 col-xl-4 mx-auto">
+      <div class="card p-4 animated-card">
+        <div class="text-center mb-4">
+          <h2 class="animated-heading">Sign Up</h2>
+          <p class="text-muted">Join Skill Hive today.</p>
+        </div>
+
+        <form id="signupForm">
+          <div class="mb-3">
+            <label for="name" class="form-label">Full Name</label>
+            <input type="text" class="form-control" id="name" placeholder="Your Name" required />
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" placeholder="YourMail@example.com" required />
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" required />
+            
+            <div id="password-strength-meter" class="password-strength-meter d-none">
+              <div class="progress">
+                <div id="password-strength-bar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+              <ul id="password-requirements">
+                <li id="req-length" class="invalid">At least 8 characters long</li>
+                <li id="req-lower" class="invalid">One lowercase letter</li>
+                <li id="req-upper" class="invalid">One uppercase letter</li>
+                <li id="req-number" class="invalid">One number</li>
+                <li id="req-special" class="invalid">One special character (e.g., !@#$)</li>
+              </ul>
+            </div>
+            </div>
+          <div class="mb-3">
+            <label for="confirmPassword" class="form-label">Confirm Password</label>
+            <input type="password" class="form-control" id="confirmPassword" required />
+          </div>
+
+          <div id="errorMessage" class="alert alert-danger d-none" role="alert"></div>
+
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary btn-lg mt-3">Create Account</button>
+          </div>
+        </form>
+
+        <div class="text-center mt-3">
+          <p class="mb-0">Already have an account? <a href="login.html">Login</a></p>
+        </div>
+      </div>
+    </div>
+  </main>
+  <div id="toastContainer"
+      class="position-fixed top-0 start-50 translate-middle-x p-3"
+      style="z-index: 1055; margin-top: 20px;">
+  <div id="mainToast"
+        class="toast align-items-center text-white bg-success border-0 text-center shadow-lg"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true">
+    <div class="d-flex justify-content-center">
+      <div class="toast-body" id="toastMessage">Action completed!</div>
+    </div>
+  </div>
+</div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      lucide.createIcons();
+      // ✅ Toast Notification Function
+    function showToast(message, type = "success") {
+      const toastEl = document.getElementById("mainToast");
+      const toastMsg = document.getElementById("toastMessage");
+
+      // Remove old background classes and set new color
+      toastEl.classList.remove("bg-success", "bg-danger", "bg-warning");
+      toastEl.classList.add(
+        type === "error" ? "bg-danger" : type === "warning" ? "bg-warning" : "bg-success"
+      );
+
+      toastMsg.textContent = message;
+
+      const toast = new bootstrap.Toast(toastEl, { autohide: true, delay: 2000 });
+      toast.show();
+    }
+
+
+      // --- Signup Form Logic ---
+      const signupForm = document.getElementById('signupForm');
+      const errorMessage = document.getElementById('errorMessage');
+
+      // --- NEW: Password Strength Elements ---
+      const passwordInput = document.getElementById('password');
+      const meterContainer = document.getElementById('password-strength-meter');
+      const strengthBar = document.getElementById('password-strength-bar');
+      const requirements = {
+        length: document.getElementById('req-length'),
+        lower: document.getElementById('req-lower'),
+        upper: document.getElementById('req-upper'),
+        number: document.getElementById('req-number'),
+        special: document.getElementById('req-special')
+      };
+      let currentScore = 0;
+      // --- END NEW ---
+
+      // --- NEW: Function to check password ---
+      function checkPasswordStrength(password) {
+        let score = 0;
+        
+        // Regex patterns
+        const checks = {
+          length: password.length >= 8,
+          lower: /[a-z]/.test(password),
+          upper: /[A-Z]/.test(password),
+          number: /[0-9]/.test(password),
+          special: /[^A-Za-z0-9]/.test(password) // Any non-alphanumeric
+        };
+        
+        // Update UI for each requirement
+        for (const [key, isValid] of Object.entries(checks)) {
+          const reqEl = requirements[key];
+          if (isValid) {
+            reqEl.classList.add('valid');
+            reqEl.classList.remove('invalid');
+            score++;
+          } else {
+            reqEl.classList.add('invalid');
+            reqEl.classList.remove('valid');
+          }
+        }
+
+        // Update progress bar
+        const width = (score / 5) * 100;
+        strengthBar.style.width = `${width}%`;
+        strengthBar.classList.remove('bg-danger', 'bg-warning', 'bg-success');
+
+        if (score <= 2) {
+          strengthBar.classList.add('bg-danger');
+          strengthBar.textContent = 'Weak';
+        } else if (score <= 4) {
+          strengthBar.classList.add('bg-warning');
+          strengthBar.textContent = 'Medium';
+        } else {
+          strengthBar.classList.add('bg-success');
+          strengthBar.textContent = 'Strong';
+        }
+        
+        return score;
+      }
+      // --- END NEW FUNCTION ---
+
+      // --- NEW: Event listener for password input ---
+      passwordInput.addEventListener('input', () => {
+        const password = passwordInput.value;
+        if (password.length > 0) {
+          meterContainer.classList.remove('d-none');
+          currentScore = checkPasswordStrength(password);
+        } else {
+          meterContainer.classList.add('d-none');
+          currentScore = 0;
+        }
+      });
+      // --- END NEW LISTENER ---
+
+
+      signupForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errorMessage.classList.add('d-none');
+
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const confirmPassword = document.getElementById('confirmPassword').value.trim();
+        
+        // --- UPDATED: Form validation ---
+        if (currentScore < 3) {
+          errorMessage.textContent = 'Password is too weak. Please meet more of the requirements.';
+          errorMessage.classList.remove('d-none');
+          return;
+        }
+
+        if (password !== confirmPassword) {
+          errorMessage.textContent = 'Passwords do not match.';
+          errorMessage.classList.remove('d-none');
+          return;
+        }
+        // --- END UPDATED VALIDATION ---
+
+        try {
+          const response = await fetch('/api/auth/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, password }),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.message || 'Signup failed. Please try again.');
+          }
+
+          showToast("Signup successful! Redirecting to login page...", "success");
+          setTimeout(() => {
+            window.location.href = "login.html";
+          }, 2000);
+
+
+        } catch (error) {
+          errorMessage.textContent = error.message;
+          errorMessage.classList.remove('d-none');
+        }
+      });
+
+      // --- Heading Animation ---
+      const heading = document.querySelector(".animated-heading");
+      if (heading) {
+        const text = heading.textContent;
+        heading.innerHTML = '';
+        text.split('').forEach((letter, i) => {
+          const span = document.createElement('span');
+          span.textContent = letter === ' ' ? '\u00A0' : letter;
+          span.style.animationDelay = `${i * 0.05}s`;
+          heading.appendChild(span);
+        });
+      }
+
+      // --- Theme and Particles (Corrected to match other pages) ---
+      const darkModeToggle = document.getElementById("darkModeToggle");
+      const themeIcon = document.getElementById("themeIcon");
+      const body = document.body;
+      
+      const loadParticles = () => { 
+        if (typeof tsParticles === 'undefined') return; 
+        try { 
+          if (window.tsParticles?.dom?.length) window.tsParticles.dom.forEach(d => d.destroy()); 
+          const color = getComputedStyle(document.body).getPropertyValue('--bs-primary').trim() || "#0d6efd"; 
+          tsParticles.load("tsparticles", { 
+            fpsLimit: 60, 
+            particles: { 
+              number: { value: 40 },
+              color: { value: color }, 
+              opacity: { value: { min: 0.1, max: 0.3 } }, 
+              size: { value: { min: 8, max: 18 } }, 
+              move: { enable: true, speed: 1.0 } 
+            } 
+          }); 
+        } catch (e) { console.error("tsParticles error", e); } 
+      };
+
+      function setTheme(theme) { 
+        const isDark = theme === "dark"; 
+        body.setAttribute("data-bs-theme", theme); 
+        if (themeIcon) themeIcon.setAttribute("data-lucide", isDark ? "sun" : "moon"); 
+        try { lucide.createIcons(); } catch (e) { console.warn("Lucide error:", e); } 
+        localStorage.setItem("theme", theme); // <-- Consistent key
+        setTimeout(loadParticles, 50); 
+      }
+      
+      try { 
+        const savedTheme = localStorage.getItem("theme"); // <-- Consistent key
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches; 
+        setTheme(savedTheme ? savedTheme : (prefersDark ? "dark" : "light")); 
+        
+        if (darkModeToggle) { 
+          darkModeToggle.addEventListener("click", () => { 
+            const newTheme = body.getAttribute("data-bs-theme") === "dark" ? "light" : "dark"; 
+            setTheme(newTheme); 
+          }); 
+        } 
+      } catch (err) { console.error("Theme init error", err); }
+      // --- End Theme/Particles Fix ---
+    });
+  </script>
+</body>
+</html>

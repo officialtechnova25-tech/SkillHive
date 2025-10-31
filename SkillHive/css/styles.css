@@ -1,0 +1,233 @@
+/* --- Multi-Theme Variable Definitions --- */
+:root {
+  /* Light Mode Palette ("Minty Fresh") - ORIGINAL THEME */
+  --bg-color: #e8f5f3; /* A very light, soft mint */
+  --bg-gradient-end-color: #e0f2ef; /* A complementary shade for the gradient */
+  --surface-color: rgba(240, 250, 248, 0.4); /* A whiter, semi-transparent version for glass */
+  --text-color: #3d5c58; /* A dark, desaturated teal */
+  --text-color-rgb: 61, 92, 88;
+  --primary-color: #2de2c2; /* Vibrant Minty-Teal */
+  --primary-color-rgb: 45, 226, 194;
+  --secondary-color: #8caaa6; /* A muted, greyish teal */
+  --highlight-color: #60e9d1; /* Lighter Teal */
+  --shadow-color: rgba(0, 0, 0, 0.08);
+  --glow-color: rgba(45, 226, 194, 0.6);
+  --border-color: rgba(61, 92, 88, 0.2); /* Subtle border using the text color */
+}
+
+[data-bs-theme="dark"] {
+  /* Dark Mode Palette ("Synthwave Glass") - ORIGINAL THEME */
+  --bg-color: #0a192f; /* Deep Navy */
+  --bg-gradient-end-color: #112240; /* A complementary solid navy for the gradient */
+  --surface-color: rgba(17, 34, 64, 0.6); /* More transparent navy for glass effect */
+  --text-color: #e6f1ff; /* Light Blueish White */
+  --text-color-rgb: 230, 241, 255;
+  --primary-color: #00ffff; /* Cyan */
+  --primary-color-rgb: 0, 255, 255;
+  --secondary-color: #a8b2d1; /* Light Slate */
+  --highlight-color: #99ffff; /* Softer Cyan */
+  --shadow-color: rgba(2, 12, 27, 0.7);
+  --glow-color: rgba(0, 255, 255, 0.7);
+  --border-color: rgba(0, 255, 255, 0.15); /* More subtle cyan border for glass edges */
+}
+
+/* --- Overriding Bootstrap's Core Theme Colors --- */
+/* These apply globally unless overridden */
+body {
+  --bs-primary: var(--primary-color);
+  --bs-primary-rgb: var(--primary-color-rgb);
+  --bs-secondary: var(--secondary-color);
+  --bs-link-color: var(--primary-color);
+  --bs-link-hover-color: var(--highlight-color);
+  --bs-link-color-rgb: var(--primary-color-rgb);
+  --bs-body-color: var(--text-color);
+  --bs-body-bg: var(--bg-color);
+  --bs-tertiary-bg: var(--surface-color);
+  --bs-border-color: var(--border-color);
+}
+
+/* --- Base Styles --- */
+body {
+  color: var(--text-color);
+  transition: background-color 0.4s ease, color 0.4s ease;
+  background: linear-gradient(120deg, var(--bg-color), var(--bg-gradient-end-color));
+}
+
+/* --- Glassmorphism Effect --- */
+header, footer, .card {
+    background-color: var(--surface-color);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    transition: background-color 0.4s ease, border-color 0.4s ease;
+}
+
+footer a {
+    color: var(--primary-color);
+}
+footer a:hover {
+    color: var(--highlight-color);
+}
+
+.text-dark { color: var(--text-color) !important; }
+.text-muted { color: var(--secondary-color) !important; }
+.navbar-brand span { color: var(--text-color) !important; }
+
+/* --- Button Styles with Glow --- */
+.btn-primary {
+  box-shadow: 0 0 15px var(--glow-color);
+  color: #000000; /* Default black text for light mode primary */
+  font-weight: bold;
+}
+[data-bs-theme="dark"] .btn-primary {
+    color: #000000; /* Keep black text for dark mode primary (cyan background) */
+}
+
+.btn-primary:hover {
+  box-shadow: 0 0 25px var(--glow-color);
+}
+.btn {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+.btn:hover {
+  transform: translateY(-3px) scale(1.05);
+}
+.btn:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+/* --- Offcanvas Menu --- */
+.offcanvas {
+  background: var(--surface-color);
+  color: var(--text-color);
+  border-right: 1px solid var(--border-color);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+}
+.offcanvas .offcanvas-title {
+  color: var(--primary-color);
+  font-weight: bold;
+  text-shadow: 0 0 10px var(--glow-color);
+}
+.offcanvas .nav-links a {
+  color: var(--text-color);
+  text-decoration: none;
+  font-size: 1.1rem;
+  padding: 15px 20px;
+  margin: 5px 0;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  transition: background-color 0.2s ease, transform 0.2s ease, color 0.2s ease;
+}
+.offcanvas .nav-links a:hover {
+  background-color: rgba(var(--primary-color-rgb), 0.1);
+  color: var(--primary-color);
+  transform: translateX(5px);
+}
+.offcanvas .btn-close {
+  filter: invert(1) grayscale(100%) brightness(50%);
+}
+[data-bs-theme="dark"] .offcanvas .btn-close {
+  filter: none;
+}
+
+
+/* --- Brand Logo & Navigation --- */
+.navbar-brand img { transition: transform 0.4s ease; }
+.navbar-brand:hover img { transform: rotate(-8deg) scale(1.1); }
+.navbar-nav .nav-link { position: relative; padding-bottom: 5px; }
+.navbar-nav .nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background-color: var(--primary-color);
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+.navbar-nav .nav-link:hover::after,
+.navbar-nav .nav-link.active::after {
+  width: 100%;
+}
+
+/* --- Staggered Word Reveal Animation with Glow --- */
+h1, .offcanvas-title {
+  text-shadow: 0 0 10px var(--glow-color);
+}
+
+/* --- Mobile Responsiveness Adjustments --- */
+@media (max-width: 768px) {
+  h1.display-4 { font-size: 2.5rem; }
+  section.text-center .mt-4 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  section.text-center .mt-4 .btn { width: 80%; margin: 0; }
+}
+
+/* Glow on input focus */
+input:focus, textarea:focus, select:focus { /* Added select */
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 8px var(--glow-color);
+}
+
+/* --- Consolidated Dashboard-Specific Theme Overrides --- */
+/* This section applies ONLY to pages where the <body> tag has class="dashboard-page" */
+body.dashboard-page {
+  /* Light Mode Palette ("Modern Library") */
+  --bg-color: #f5f6fa;
+  --bg-gradient-end-color: #e9ecf2;
+  --surface-color: rgba(255, 255, 255, 0.6);
+  --text-color: #2f3e57;
+  --text-color-rgb: 47, 62, 87;
+  --primary-color: #005f73; /* Deep Teal */
+  --primary-color-rgb: 0, 95, 115;
+  --secondary-color: #6c757d;
+  --highlight-color: #0a9396;
+  --glow-color: rgba(0, 95, 115, 0.55);
+  --border-color: rgba(47, 62, 87, 0.15);
+
+  /* Ensure Bootstrap syncs */
+  --bs-body-bg: var(--bg-color);
+  --bs-body-color: var(--text-color);
+  --bs-primary: var(--primary-color);
+  --bs-primary-rgb: var(--primary-color-rgb);
+}
+/* Specific override for better contrast on dashboard button */
+body.dashboard-page .btn-primary {
+  color: #FFFFFF; /* White text for Deep Teal buttons */
+}
+
+
+/* Dark Mode Palette ("Blueprint Study") */
+body.dashboard-page[data-bs-theme="dark"] {
+  --bg-color: #0d1b2a;
+  --bg-gradient-end-color: #1b263b;
+  --surface-color: rgba(27, 38, 59, 0.6);
+  --text-color: #e6f1ff;
+  --text-color-rgb: 230, 241, 255;
+  --primary-color: #4cc9f0; /* Cyan Accent */
+  --primary-color-rgb: 76, 201, 240;
+  --secondary-color: #a8b2d1;
+  --highlight-color: #80dfff;
+  --glow-color: rgba(76, 201, 240, 0.5);
+  --border-color: rgba(76, 201, 240, 0.12);
+
+  /* Ensure Bootstrap syncs */
+  --bs-body-bg: var(--bg-color);
+  --bs-body-color: var(--text-color);
+  --bs-primary: var(--primary-color);
+  --bs-primary-rgb: var(--primary-color-rgb);
+}
+/* Ensure button text is readable in dark dashboard theme */
+body.dashboard-page[data-bs-theme="dark"] .btn-primary {
+    color: #000000; /* Black text for Cyan buttons */
+}
+/* --- END OF CONSOLIDATED SECTION --- */

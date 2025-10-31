@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notifications - Skill Hive</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.11.1/tsparticles.bundle.min.js"></script>
+  
+  <link href="css/styles.css" rel="stylesheet" /> 
+
+  <style>
+    :root {
+      --header-footer-bg: rgba(255, 255, 255, 0.5);
+      --card-bg: rgba(255, 255, 255, 0.4);
+      --border-color: rgba(0, 0, 0, 0.1);
+      --card-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+      --text-color: var(--bs-dark);
+    }
+    [data-bs-theme="dark"] {
+      --header-footer-bg: rgba(10, 10, 20, 0.7);
+      --card-bg: rgba(25, 28, 42, 0.7);
+      --border-color: rgba(255, 255, 255, 0.15);
+      --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+      --text-color: var(--bs-light);
+    }
+    body {
+      font-family: "Montserrat", sans-serif;
+      display: flex; flex-direction: column; min-height: 100vh;
+      color: var(--text-color);
+      transition: background-color 0.4s ease;
+    }
+    body[data-bs-theme="light"] {
+        background-color: #f0f2f5;
+        background-image: radial-gradient(at 0% 0%, hsla(217, 42%, 95%, 1) 0, transparent 50%), radial-gradient(at 50% 100%, hsla(240, 32%, 98%, 1) 0, transparent 50%);
+    }
+    body[data-bs-theme="dark"] {
+        background-color: #0b0c10;
+        background-image: radial-gradient(at 0% 0%, hsla(253, 16%, 7%, 1) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(217, 42%, 12%, 1) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(240, 32%, 10%, 1) 0, transparent 50%);
+    }
+    main { flex: 1; }
+    #tsparticles { position: fixed; width: 100%; height: 100%; z-index: -1; top: 0; left: 0; }
+    .navbar-brand span { font-family: 'Orbitron', sans-serif; }
+    .glass-effect { background: var(--card-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid var(--border-color); box-shadow: var(--card-shadow); }
+    .glass-header, .glass-footer { background: var(--header-footer-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-color: var(--border-color); }
+    .glass-header { border-bottom: 1px solid var(--border-color); }
+    .glass-footer { border-top: 1px solid var(--border-color); }
+
+    /* Notification List Styling */
+    .list-group-item { background: transparent !important; }
+    .list-group-item.unread { font-weight: 600; }
+    .list-group-item .timestamp { font-size: 0.8rem; color: var(--bs-secondary-color); font-weight: 400; }
+    
+    /* NEW styles for action buttons */
+    .notification-actions {
+        margin-top: 10px;
+        display: flex;
+        gap: 10px;
+    }
+    
+    /* Offcanvas Menu */
+    .offcanvas-body .nav-links { padding-left: 0; list-style-type: none; }
+    .offcanvas-body .nav-links a { display: flex; align-items: center; gap: 12px; color: var(--bs-body-color); padding: 10px 14px; border-radius: 8px; transition: all 0.3s; text-decoration: none; font-weight: 500; }
+    .offcanvas-body .nav-links a:hover { background: rgba(var(--bs-primary-rgb), 0.1); color: var(--bs-primary); }
+    .offcanvas-body .nav-links a.active { background: var(--bs-primary); color: white; }
+    [data-bs-theme="dark"] .offcanvas-body .nav-links a { color: var(--bs-light); }
+    [data-bs-theme="dark"] .offcanvas-body .nav-links a.active { color: white; }
+  </style>
+</head>
+
+<body>
+  <div id="tsparticles"></div>
+
+  <header class="sticky-top glass-header">
+    <div class="container d-flex justify-content-between align-items-center py-2">
+      <div class="flex-grow-1">
+        <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#mainOffcanvas">
+          <i data-lucide="menu"></i>
+        </button>
+      </div>
+      <div class="flex-grow-1 text-center">
+        <a class="navbar-brand d-inline-flex align-items-center" href="index.html">
+          <img src="assets/images/skillhive-logo.png" alt="Skill Hive Logo" width="110" height="70" loading="lazy" />
+          <span class="ms-2 fs-4">Skill Hive</span>
+        </a>
+      </div>
+      <div class="flex-grow-1 d-flex justify-content-end align-items-center">
+        <div id="auth-links" class="d-flex align-items-center"></div>
+        <button id="darkModeToggle" class="btn btn-outline-secondary ms-2" title="Toggle theme">
+          <i id="themeIcon" data-lucide="moon"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0">Your Notifications</h2>
+        <div>
+            <button id="markAllReadBtn" class="btn btn-primary me-2">
+                <i data-lucide="check-check" class="me-1" style="width:16px; height:16px;"></i> Mark all as read
+            </button>
+            <button id="refreshBtn" class="btn btn-outline-secondary">
+                <i data-lucide="refresh-cw" style="width:16px; height:16px;"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="glass-effect p-2 p-md-4 rounded-4">
+      <div id="notification-container">
+          <div class="text-center p-5">
+              <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+              </div>
+              <p class="mt-2">Loading notifications...</p>
+          </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="py-4 glass-footer mt-auto">
+    <div class="container text-center">
+        <p class="mb-0 text-muted">&copy; 2025 Skill Hive — Powered by Tech Nova</p>
+    </div>
+  </footer>
+
+  <div class="offcanvas offcanvas-start" tabindex="-1" id="mainOffcanvas">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title">Skill Hive Menu</h5>
+        <button class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body d-flex flex-column">
+      <ul class="list-unstyled nav-links flex-grow-1">
+          <li><a href="index.html"><i data-lucide="home"></i> Home</a></li>
+          <li><a href="dashboard.html"><i data-lucide="layout-dashboard"></i> Dashboard</a></li>
+          <li><a href="profile.html"><i data-lucide="user"></i> My Profile</a></li>
+          <li><a href="search.html"><i data-lucide="search"></i> Find Skills</a></li>
+          <hr />
+          <li><a href="notifications.html"><i data-lucide="bell"></i> Notifications</a></li>
+          <li><a href="settings.html"><i data-lucide="settings"></i> Settings</a></li>
+          <li id="adminPanelLink" style="display:none;"><a href="admin.html"><i data-lucide="shield"></i> Admin Panel</a></li>
+      </ul>
+      <div id="offcanvas-auth-links" class="mt-auto"></div>
+    </div>
+  </div>
+  
+  <div class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 1055; margin-top: 20px;">
+    <div id="mainToast" class="toast align-items-center text-white bg-success border-0 text-center shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex justify-content-center">
+        <div class="toast-body" id="toastMessage"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
+ <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const notificationContainer = document.getElementById("notification-container");
+  const markAllReadBtn = document.getElementById("markAllReadBtn");
+  const refreshBtn = document.getElementById("refreshBtn");
+  const token = localStorage.getItem("token");
+  const userJSON = localStorage.getItem("user");
+  let user = null;
+  if(userJSON) user = JSON.parse(userJSON);
+
+  // Define API paths
+  const NOTIFICATIONS_API = "/api/notifications"; // Your notifications API
+  const SESSIONS_API = "/api/sessions"; // Your new sessions API
+
+  // --- Toast Notification Function ---
+  function showToast(message, type = "success") {
+    const toastEl = document.getElementById("mainToast");
+    const toastMsg = document.getElementById("toastMessage");
+    if (!toastEl || !toastMsg) return;
+    
+    toastEl.classList.remove("bg-success", "bg-danger", "bg-warning");
+    toastEl.classList.add(
+      type === "error" ? "bg-danger" : type === "warning" ? "bg-warning" : "bg-success"
+    );
+    toastMsg.textContent = message;
+    const toast = new bootstrap.Toast(toastEl, { autohide: true, delay: 3000 });
+    toast.show();
+  }
+
+  // --- API Helper Functions ---
+  async function apiFetch(url, options = {}) {
+      options.headers = {
+        ...options.headers,
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      };
+      const res = await fetch(url, options);
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.message || "API request failed");
+      }
+      return await res.json();
+  }
+
+  // --- Render notifications function (REWRITTEN) ---
+  function renderNotifications(notifications) {
+    if (!notifications || notifications.length === 0) {
+      notificationContainer.innerHTML = `
+        <div class="text-center p-5">
+          <i data-lucide="check-circle-2" class="text-success" style="width: 48px; height: 48px;"></i>
+          <p class="mt-2">You're all caught up!</p>
+        </div>`;
+      lucide.createIcons();
+      markAllReadBtn.disabled = true;
+      return;
+    }
+
+    const listHtml = notifications
+      .map((n) => {
+        let actionButtons = '';
+        
+        // Add buttons based on notification type and read status
+        if (!n.read) {
+          if (n.type === 'session_request') {
+            // Tutor: Accept/Reject a SCHEDULED request
+            actionButtons = `
+              <div class="notification-actions">
+                <button class="btn btn-success btn-sm" data-action="accept-scheduled" data-id="${n.sessionId}">
+                  Accept & Set Time
+                </button>
+                <button class="btn btn-danger btn-sm" data-action="reject" data-id="${n.sessionId}">
+                  Reject
+                </button>
+              </div>`;
+          } else if (n.type === 'session_start_now') {
+            // Tutor: Accept/Reject an INSTANT request
+             actionButtons = `
+              <div class="notification-actions">
+                <button class="btn btn-success btn-sm" data-action="accept-now" data-id="${n.sessionId}">
+                  <i data-lucide="video" style="width:16px;"></i> Accept & Join
+                </button>
+                <button class="btn btn-danger btn-sm" data-action="reject" data-id="${n.sessionId}">
+                  Not Available
+                </button>
+              </div>`;
+          } else if (n.type === 'session_time_proposed') {
+            // Student: Confirm/Reject a SCHEDULED time
+            actionButtons = `
+              <div class="notification-actions">
+                <button class="btn btn-success btn-sm" data-action="confirm-scheduled" data-id="${n.sessionId}">
+                  Confirm Time
+                </button>
+                <button class="btn btn-danger btn-sm" data-action="reject" data-id="${n.sessionId}">
+                  Reject / Reschedule
+                </button>
+              </div>`;
+          }
+        }
+        
+        // Student: Join an INSTANT session the tutor accepted
+        if (n.type === 'session_join_now') {
+             actionButtons = `
+              <div class="notification-actions">
+                <a href="session.html?session=${n.sessionId}" class="btn btn-success btn-sm">
+                  <i data-lucide="video" style="width:16px;"></i> Join Now!
+                </a>
+              </div>`;
+        }
+
+        // Both: Join a SCHEDULED session that is confirmed
+        if (n.type === 'session_confirmed') {
+             actionButtons = `
+              <div class="notification-actions">
+                <a href="session.html?session=${n.sessionId}" class="btn btn-primary btn-sm">
+                  Join Session
+                </a>
+              </div>`;
+        }
+
+        return `
+        <li class="list-group-item d-flex justify-content-between align-items-start flex-wrap ${n.read ? "" : "unread"}">
+          <div style="flex-basis: 70%;">
+            <div>${n.message}</div>
+            <div class="timestamp">${new Date(n.createdAt).toLocaleString()}</div>
+            ${actionButtons}
+          </div>
+          ${n.read ? "" : '<span class="badge bg-primary rounded-pill">New</span>'}
+        </li>`;
+      })
+      .join("");
+
+    notificationContainer.innerHTML = `<ul class="list-group list-group-flush">${listHtml}</ul>`;
+    const hasUnread = notifications.some((n) => !n.read && n.type !== 'session_request' && n.type !== 'session_time_proposed' && n.type !== 'session_start_now');
+    markAllReadBtn.disabled = !hasUnread;
+    lucide.createIcons();
+  }
+
+  // --- Load notifications ---
+  async function fetchAndRenderNotifications() {
+    try {
+      notificationContainer.innerHTML = `
+        <div class="text-center p-5">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p class="mt-2">Loading notifications...</p>
+        </div>`;
+      markAllReadBtn.disabled = true;
+
+      const data = await apiFetch(NOTIFICATIONS_API);
+      renderNotifications(data.notifications); // Assuming API returns { notifications: [...] }
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      notificationContainer.innerHTML = `
+        <div class="text-center p-5 text-danger">
+          <i data-lucide="alert-triangle"></i>
+          <p class="mt-2">Could not load notifications: ${error.message}</p>
+        </div>`;
+      lucide.createIcons();
+    }
+  }
+
+  // --- Handle Action Button Clicks ---
+  async function handleNotificationAction(e) {
+      const button = e.target.closest('.btn[data-action]');
+      if (!button) return;
+
+      const action = button.dataset.action;
+      const sessionId = button.dataset.id;
+
+      if (!action || !sessionId) return;
+      
+      button.disabled = true;
+      button.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+      try {
+        let endpoint = '';
+        let options = { method: 'PUT', body: JSON.stringify({}) }; // Default empty body
+        
+        if (action === 'accept-scheduled') {
+          // Tutor accepts a SCHEDULED request
+          const time = prompt("Please enter a proposed time for the session (e.g., Tomorrow at 10:00 AM):");
+          if (!time) {
+             button.disabled = false;
+             button.innerHTML = 'Accept & Set Time';
+             return; // User cancelled prompt
+          }
+          endpoint = `${SESSIONS_API}/${sessionId}/accept`;
+          options.body = JSON.stringify({ scheduledTime: time });
+          
+        } else if (action === 'accept-now') {
+          // Tutor accepts an INSTANT request
+          endpoint = `${SESSIONS_API}/${sessionId}/accept`;
+          // No body needed, session already has roomName
+          const result = await apiFetch(endpoint, options);
+          showToast(result.message, "success");
+          // SPECIAL: Redirect tutor immediately to the session
+          window.location.href = `session.html?session=${sessionId}`;
+          return; // Stop further execution
+
+        } else if (action === 'reject') {
+          // User rejects/cancels (works for both types)
+          const reason = prompt("Optional: Enter a reason for rejection (e.g., 'I am not available.')");
+          endpoint = `${SESSIONS_API}/${sessionId}/reject`;
+          options.body = JSON.stringify({ reason: reason || '' });
+
+        } else if (action === 'confirm-scheduled') {
+          // Student confirms the SCHEDULED time
+          endpoint = `${SESSIONS_API}/${sessionId}/confirm`;
+        }
+
+        const result = await apiFetch(endpoint, options);
+        showToast(result.message, "success"); // Show success message
+        fetchAndRenderNotifications(); // Refresh the list
+
+      } catch (error) {
+        console.error(`Error performing action '${action}':`, error);
+        showToast(`Error: ${error.message}`, "error");
+        // Reset button on error
+        button.disabled = false;
+        if(action === 'accept-scheduled') button.innerText = 'Accept & Set Time';
+        if(action === 'accept-now') button.innerHTML = '<i data-lucide="video" style="width:16px;"></i> Accept & Join';
+        if(action === 'reject') button.innerText = 'Reject / Reschedule';
+        if(action === 'confirm-scheduled') button.innerText = 'Confirm Time';
+        if (action === 'reject' && button.innerText === "Not Available") button.innerText = 'Not Available';
+        lucide.createIcons(); // Re-render icon if it was there
+      }
+  }
+
+  // --- Mark all read handler ---
+  async function handleMarkAllRead() {
+    try {
+      markAllReadBtn.disabled = true;
+      await apiFetch(`${NOTIFICATIONS_API}/mark-all-read`, { method: 'PUT' });
+      await fetchAndRenderNotifications();
+    } catch (error) {
+      console.error("Error marking notifications as read:", error);
+      showToast("There was an error. Please try again.", "error");
+      markAllReadBtn.disabled = false;
+    }
+  }
+
+  // --- Auth + Menu Setup ---
+  const authLinks = document.getElementById("auth-links");
+  const offcanvasAuthLinks = document.getElementById("offcanvas-auth-links");
+  const logout = () => {
+    localStorage.clear();
+    window.location.href = "login.html";
+  };
+  
+  function highlightActiveMenuLink() {
+    try {
+        const currentPage = window.location.pathname.split("/").pop();
+        if (!currentPage) return;
+        
+        const menuLinks = document.querySelectorAll("#mainOffcanvas .nav-links a");
+        menuLinks.forEach(link => {
+            const linkHref = link.getAttribute("href");
+            if (!linkHref) return;
+            const linkPage = linkHref.split("/").pop();
+            link.classList.remove("active");
+            if (linkPage === currentPage) {
+                link.classList.add("active");
+            }
+        });
+    } catch (e) {
+        console.warn("Error highlighting menu link:", e);
+    }
+  }
+
+  if (token && user) {
+    authLinks.innerHTML = `
+      <span class="navbar-text me-3 d-none d-lg-block">Hi, ${user.name}!</span>
+      <a href="dashboard.html" class="btn btn-outline-primary me-2">Dashboard</a>`;
+    offcanvasAuthLinks.innerHTML = `
+      <hr/>
+      <a href="#" id="logout-link-offcanvas" class="btn btn-outline-danger w-100">
+        <i data-lucide="log-out"></i> Logout
+      </a>`;
+    document
+      .getElementById("logout-link-offcanvas")
+      ?.addEventListener("click", logout);
+    
+    if (user.role === 'admin') {
+        const adminLink = document.getElementById('adminPanelLink');
+        if (adminLink) adminLink.style.display = 'list-item'; // Show as list item
+    }
+
+    // Initial load and event listeners
+    fetchAndRenderNotifications();
+    markAllReadBtn.addEventListener("click", handleMarkAllRead);
+    refreshBtn.addEventListener("click", fetchAndRenderNotifications);
+    // Add single event listener to the container for all action buttons
+    notificationContainer.addEventListener('click', (e) => {
+        if (e.target.closest('.btn[data-action]')) {
+            handleNotificationAction(e);
+        }
+    });
+  } else {
+    notificationContainer.innerHTML = `
+      <div class="text-center p-5">
+        <i data-lucide="lock"></i>
+        <p class="mt-2">Please <a href="login.html">log in</a> to see your notifications.</p>
+      </div>`;
+    document.getElementById("markAllReadBtn").style.display = "none";
+    document.getElementById("refreshBtn").style.display = "none";
+    authLinks.innerHTML = `
+      <a href="login.html" class="btn btn-light me-2">Login</a>
+      <a href="signup.html" class="btn btn-primary">Sign Up</a>`;
+  }
+
+  // --- Theme & Background (Consistent with other pages) ---
+  const darkModeToggle = document.getElementById("darkModeToggle"),
+    themeIcon = document.getElementById("themeIcon"),
+    body = document.body;
+  
+  const loadParticles = () => { 
+    if (typeof tsParticles === 'undefined') return; 
+    try { 
+      if (window.tsParticles?.dom?.length) window.tsParticles.dom.forEach(d => d.destroy()); 
+      const color = getComputedStyle(document.body).getPropertyValue('--bs-primary').trim() || "#0d6efd"; 
+      tsParticles.load("tsparticles", { 
+        fpsLimit: 60, 
+        particles: { 
+          number: { value: 40 }, 
+          color: { value: color }, 
+          opacity: { value: { min: 0.1, max: 0.3 } }, 
+          size: { value: { min: 8, max: 18 } }, 
+          move: { enable: true, speed: 1.0 } 
+        } 
+      }); 
+    } catch (e) { console.error("tsParticles error", e); } 
+  };
+
+  function setTheme(theme) { 
+    const isDark = theme === "dark"; 
+    body.setAttribute("data-bs-theme", theme); 
+    if (themeIcon) themeIcon.setAttribute("data-lucide", isDark ? "sun" : "moon"); 
+    try { lucide.createIcons(); } catch (e) { console.warn("Lucide error:", e); } 
+    localStorage.setItem("theme", theme); // Consistent key
+    setTimeout(loadParticles, 50); 
+  }
+
+  try { 
+    const savedTheme = localStorage.getItem("theme"); 
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches; 
+    setTheme(savedTheme ? savedTheme : (prefersDark ? "dark" : "light")); 
+    
+    if (darkModeToggle) { 
+      darkModeToggle.addEventListener("click", () => { 
+        const newTheme = body.getAttribute("data-bs-theme") === "dark" ? "light" : "dark"; 
+        setTheme(newTheme); 
+      }); 
+    } 
+  } catch (err) { console.error("Theme init error", err); }
+  
+  highlightActiveMenuLink(); // Highlight the active link in the menu
+  lucide.createIcons();
+});
+</script>
+
+</body>
+</html>

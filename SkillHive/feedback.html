@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Skill Hive - Feedback</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.8) translateY(20px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .animated-pop-in {
+      animation: popIn 0.6s ease-out forwards;
+    }
+
+    /* Feedback Card Styling */
+    .feedback-card {
+      border-radius: 20px;
+      background: #fff;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .feedback-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    /* Star Rating */
+    .star {
+      font-size: 2rem;
+      color: #ccc;
+      cursor: pointer;
+      transition: color 0.2s ease, transform 0.2s ease;
+    }
+    .star:hover {
+      transform: scale(1.2);
+    }
+    .star.selected,
+    .star.hovered {
+      color: #ffc107;
+    }
+  </style>
+</head>
+<body>
+  <header class="bg-white sticky-top soft-shadow">
+    <nav class="navbar navbar-expand-lg">
+      <div class="container">
+        <a class="navbar-brand text-primary d-flex align-items-center" href="index.html">
+          <img src="assets/images/skillhive-logo.png" alt="Skill Hive Logo" width="150" height="100">
+          <div><strong>Skill Hive</strong></div>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav mx-auto">
+            <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="search.html">Find Skills</a></li>
+            <li class="nav-item"><a class="nav-link" href="dashboard.html">Dashboard</a></li>
+          </ul>
+          <div class="d-flex align-items-center">
+            <button id="darkModeToggle" class="btn btn-outline-secondary me-2">
+              <i id="themeIcon" data-lucide="moon"></i>
+            </button>
+            <a href="profile.html" class="btn btn-light me-2">Profile</a>
+            <a href="index.html" class="btn btn-outline-secondary">Logout</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card feedback-card p-4 text-center animated-pop-in">
+          <h3 class="mb-3">Session Complete!</h3>
+          <p class="text-muted">Please rate your session with <strong>Jane Doe</strong>.</p>
+
+          <div id="starContainer" class="my-3">
+            <span class="star" data-value="1">★</span>
+            <span class="star" data-value="2">★</span>
+            <span class="star" data-value="3">★</span>
+            <span class="star" data-value="4">★</span>
+            <span class="star" data-value="5">★</span>
+          </div>
+
+          <textarea id="feedbackText" class="form-control mb-3" rows="4" placeholder="Leave your feedback..."></textarea>
+          <button id="submitFeedback" class="btn btn-primary w-100">Submit Feedback</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-white pt-4 pb-4 border-top mt-5">
+    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center text-center text-md-start">
+      <div class="mb-3 mb-md-0"><strong></strong></div>
+      <div>
+        <small class="d-block mb-1">Powered By</small>
+        <img src="assets/images/technova-logo.png" width="120" alt="Tech Nova">
+        <div><strong>TECHNOVA</strong></div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    lucide.createIcons();
+
+    let selectedRating = 0;
+    const stars = document.querySelectorAll('.star');
+    const feedbackText = document.getElementById('feedbackText');
+    const submitBtn = document.getElementById('submitFeedback');
+
+    // Star hover and click effects
+    stars.forEach(star => {
+      star.addEventListener('mouseenter', () => {
+        stars.forEach(s => {
+          if (s.dataset.value <= star.dataset.value) s.classList.add('hovered');
+        });
+      });
+      star.addEventListener('mouseleave', () => {
+        stars.forEach(s => s.classList.remove('hovered'));
+      });
+      star.addEventListener('click', () => {
+        selectedRating = star.dataset.value;
+        stars.forEach(s => s.classList.remove('selected'));
+        for (let i = 0; i < selectedRating; i++) stars[i].classList.add('selected');
+      });
+    });
+
+    // Submit feedback
+    submitBtn.addEventListener('click', () => {
+      const feedback = feedbackText.value.trim();
+      if (!selectedRating) {
+        alert('Please select a rating.');
+        return;
+      }
+      if (!feedback) {
+        alert('Please enter your feedback.');
+        return;
+      }
+
+      // Example: Add XP + redirect
+      addXP(150);
+      alert('Thank you for your feedback! Your achievements have been updated.');
+      window.location.href = 'achievements.html';
+    });
+
+    // XP Function (placeholder)
+    function addXP(points) {
+      console.log(`Added ${points} XP`);
+    }
+  </script>
+</body>
+</html>
